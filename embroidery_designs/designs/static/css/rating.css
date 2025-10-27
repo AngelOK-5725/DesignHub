@@ -1,0 +1,47 @@
+Стили для рейтинга
+.rating-stars {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.star-rating .star {
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s;
+    font-size: 1.2em;
+}
+
+.star-rating .star.filled {
+    color: #ffc107;
+}
+
+.star-rating .star.hover {
+    color: #ffc107;
+}
+
+.rating-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.rating-btn.active {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+.purchase-stats .badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.75em;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .rating-stats .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .purchase-stats {
+        text-align: left !important;
+    }
+}
