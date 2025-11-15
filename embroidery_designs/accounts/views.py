@@ -8,6 +8,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 
+def profile(request):
+    return render(request, 'accounts/profile.html')
+
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

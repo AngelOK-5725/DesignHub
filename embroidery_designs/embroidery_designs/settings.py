@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-0#*i1s%v=hgciffww)%thj73+5d$3nr@0hvb!7gvrbn+q-lwz-
 import os
 from pathlib import Path
 # ПОДКЛЮЧАЕМ ПАТЧ ДО ЗАГРУЗКИ МОДЕЛЕЙ
-from . import patches  # ← ДОБАВЬТЕ ЭТУ СТРОЧКУ
+from . import patches  # 
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -93,7 +93,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Настройки аутентификации
+# Настройки аутентификации|authentication settings
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -103,3 +103,12 @@ FREEMASSKA_MERCHANT_ID = 'your_merchant_id'
 FREEMASSKA_SECRET_KEY = 'your_secret_key'
 FREEMASSKA_SECRET_KEY2 = 'your_secret_key2'
 
+# Забыли пароль email settings
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'hamraevatamila@gmail.com'
+EMAIL_HOST_PASSWORD = 'xgaemokvakmlpuhx'
+# DEFAULT_FROM_EMAIL = ''
