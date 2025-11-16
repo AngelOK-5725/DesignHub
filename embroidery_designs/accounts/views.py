@@ -1,28 +1,21 @@
 # embroidery_designs/accounts/views.py
-from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-# from .forms import ProfileForm
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+)
 
-# @login_required
-# def edit_profile(request):
-#     profile = request.user.profile
-#     if request.method == 'POST':
-#         form = ProfileForm(request.POST, request.FILES, instance=profile)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('profile')  # возвращаемся на страницу профиля
-#     else:
-#         form = ProfileForm(instance=profile)
-#     return render(request, 'edit_profile.html', {'form': form})
+
 
 
 def profile(request):
@@ -49,7 +42,10 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            messages.success(request, f'Вход выполнен успешно, {user.username}!')
             return redirect('design_list')
+        else:
+            messages.error(request, 'Неверное имя пользователя или пароль!')
     else:
         form = AuthenticationForm()
     
@@ -57,10 +53,28 @@ def user_login(request):
 
 @login_required
 def user_logout(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('design_list')
+    logout(request)
+    messages.info(request, 'Вы успешно вышли из аккаунта.')
     return redirect('design_list')
 
+# --------------------------------------------
 
+class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    def get(self, request, *args, **kwargs):
+        messages.success(request, 'Инструкции по сбросу пароля отправлены на ваш email')
+        return super().get(request, *args, **kwargs)
+
+class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    def get(self, request, *args, **kwargs):
+        messages.success(request, 'Ваш пароль был успешно сброшен')
+        return super().get(request, *args, **kwargs)    
+
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    def form_valid(self, form):
+        messages.success(self.request, 'Ваш пароль был успешно сброшен!')
+        return super().form_valid(form)
     
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    def form_valid(self, form):
+        messages.success(self.request, 'Инструкции по сбросу пароля отправлены на ваш email!')
+        return super().form_valid(form)
