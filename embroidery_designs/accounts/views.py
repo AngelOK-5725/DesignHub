@@ -61,3 +61,6 @@ def user_logout(request):
         logout(request)
         return redirect('design_list')
     return redirect('design_list')
+
+
+    

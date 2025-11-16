@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block title %}Профиль пользователя{% endblock %}
-
+{% block extra_css %}
+<link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
 {% block content %}
 <div class="col-md-8">
 
@@ -28,13 +30,9 @@
             <table class="table table-sm mt-3">
                 <tr><th>Страна:</th><td>{{ user.profile.country|default:"—" }}</td></tr>
                 <tr><th>Город:</th><td>{{ user.profile.city|default:"—" }}</td></tr>
-                <tr><th>Организация:</th><td>{{ user.profile.organization|default:"—" }}</td></tr>
-                <tr><th>Портфолио:</th>
-                    <td>
-                        {% if user.profile.portfolio_link %}
-                            <a href="{{ user.profile.portfolio_link }}">{{ user.profile.portfolio_link }}</a>
-                        {% else %} — {% endif %}
-                    </td>
+                <tr><th>Организация:</th><td>{{ user.profile.organization|default:"—" }}</td>
+                
+                
                 </tr>
                 <tr><th>Последняя покупка:</th>
                     <td>{{ user.profile.last_purchase_date|default:"—" }}</td>

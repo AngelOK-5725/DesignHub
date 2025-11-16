@@ -1,0 +1,172 @@
+/* -----------------------------
+    Общий стиль страницы
+-------------------------------- */
+body {
+    background: linear-gradient(135deg, #e8f3ff, #cfe4ff);
+    font-family: "Inter", sans-serif;
+}
+
+/* Контейнер профиля */
+.profile-page {
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(100, 140, 180, 0.20);
+    border: 1px solid rgba(180, 200, 230, 0.4);
+}
+
+/* -----------------------------
+    Хедер карточки
+-------------------------------- */
+.col-md-8{
+    /* position: fixed; */
+    display: contents;
+}
+
+.profile-page .card-header {
+    background: linear-gradient(135deg, #6aa7d8, #3b6fa0);
+    color: white;
+    padding: 24px 28px;
+    border: none;
+}
+
+.profile-page .card-header h4 {
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* -----------------------------
+    Контент
+-------------------------------- */
+.profile-page .card-body {
+    padding: 30px;
+    color: #3d556e;
+    font-size: 15px;
+}
+
+.profile-page p {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #395066;
+}
+
+.profile-page strong {
+    color: #2f4960;
+}
+
+/* -----------------------------
+    Кнопка выхода
+-------------------------------- */
+.profile-page .btn {
+    background: #3b6fa0;
+    color: white;
+    padding: 10px 26px;
+    border-radius: 30px;
+    border: none;
+    transition: 0.25s ease;
+    font-weight: 500;
+}
+
+.profile-page .btn:hover {
+    background: #568abc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(80, 120, 160, 0.3);
+}
+
+/* -----------------------------
+    Заголовки разделов
+-------------------------------- */
+.profile-page h5 {
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #30557a;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.profile-page h5::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 50px;
+    height: 3px;
+    background: #6aa7d8;
+    border-radius: 6px;
+}
+
+/* -----------------------------
+    Таблица профиля
+-------------------------------- */
+.profile-page table {
+    margin-top: 15px;
+}
+
+.profile-page table th {
+    width: 200px;
+    color: #2e4d68;
+    font-weight: 600;
+    padding: 10px 5px;
+}
+
+.profile-page table td {
+    color: #45627c;
+    padding: 10px 5px;
+}
+
+.profile-page table tr:nth-child(even) {
+    background: rgba(225, 238, 255, 0.55);
+    border-radius: 6px;
+}
+
+/* -----------------------------
+    Блок избранного
+-------------------------------- */
+.profile-page .card.shadow-sm {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(180, 200, 230, 0.3);
+    transition: all 0.25s ease;
+}
+
+.profile-page .card.shadow-sm:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 22px rgba(120, 160, 200, 0.25);
+}
+
+.profile-page .card-img-top {
+    height: 170px;
+    object-fit: cover;
+    background: #ccddef;
+}
+
+/* Кнопка “Подробнее” */
+.profile-page .btn-outline-primary {
+    border-color: #6aa7d8;
+    color: #3b6fa0;
+    border-radius: 22px;
+    font-size: 13px;
+    padding: 5px 14px;
+    transition: 0.25s;
+}
+
+.profile-page .btn-outline-primary:hover {
+    background: #6aa7d8;
+    color: white;
+}
+
+/* -----------------------------
+    Адаптивность
+-------------------------------- */
+@media (max-width: 768px) {
+    .profile-page table th {
+        width: 130px;
+    }
+
+    .profile-page .card-img-top {
+        height: 140px;
+    }
+}
