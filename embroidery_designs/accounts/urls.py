@@ -11,14 +11,13 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile, name='profile'),
 
-    path('accounts/', include('django.contrib.auth.urls')),
 
-    path('accounts/password-reset/', auth_views.PasswordResetView.as_view(), 
+    path('password-reset/', auth_views.PasswordResetView.as_view(), 
         name='password_reset'),
-    path('accounts/password-reset/done/', auth_views.PasswordResetDoneView.as_view(), 
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(), 
         name='password_reset_done'),
-    path('accounts/password-reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), 
+    path('password-reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), 
         name='password_reset_confirm'),
-    path('accounts/password-reset/done/', auth_views.PasswordResetCompleteView.as_view(), 
+    path('password-reset/done/', auth_views.PasswordResetCompleteView.as_view(), 
         name='password_reset_complete'),
 ]

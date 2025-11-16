@@ -8,6 +8,7 @@
     <link href="{% static 'css/rating.css' %}" rel="stylesheet">
 </head>
 <body>
+    
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'design_list' %}">
@@ -22,12 +23,12 @@
                     <a class="nav-link" href="{% url 'my_designs' %}">
                         <i class="fas fa-download"></i> Мои дизайны
                     </a>
-                    <form method="post" action="{% url 'logout' %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-link nav-link" style="border: none; background: none;">
-                            <i class="fas fa-sign-out-alt"></i> Выйти ({{ user.username }})
-                        </button>
-                    </form>
+                        <form method="post" action="{% url 'profile' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link nav-link" style="border: none; background: none;">
+                                <i class="fas fa-sign-out-alt"></i> Профиль ({{ user.username }})
+                            </button>
+                        </form>
                 {% else %}
                     <a class="nav-link" href="{% url 'login' %}">
                         <i class="fas fa-sign-in-alt"></i> Войти
@@ -40,6 +41,14 @@
         </div>
     </nav>
     
+    {% if messages %}
+        <div class='notif'>
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="container mt-4">
         {% if messages %}
             {% for message in messages %}
