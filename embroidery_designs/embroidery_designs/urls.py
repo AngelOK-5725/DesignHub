@@ -21,9 +21,16 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('', include('designs.urls')),
-    path('payments/', include('payments.urls')),
+
+    # твои кастомные аккаунты
+    path('accounts/', include('accounts.urls')),  
+    
+    # Django auth (password reset / change)
     path('accounts/', include('django.contrib.auth.urls')),
 
+    # ALLAUTH соц. логины
+    path('social/', include('allauth.urls')),  # <----- ДОБАВЬ
+
+    path('', include('designs.urls')),
+    path('payments/', include('payments.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

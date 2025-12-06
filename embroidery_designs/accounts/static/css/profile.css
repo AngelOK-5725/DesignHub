@@ -12,6 +12,9 @@ a{
     display: flex;
     gap: 25px;
     margin-top: 25px;
+    margin: 0 120px;
+    max-width: 1200px;
+    flex-wrap: wrap;
 }
 
 /* ------------------------------
@@ -95,7 +98,7 @@ a{
 
 
 /* ------------------------------
-   ПРАВАЯ КОЛОНКА
+    ПРАВАЯ КОЛОНКА
 -------------------------------- */
 .profile-main {
     flex: 1;
@@ -197,4 +200,18 @@ a{
 .no-fav {
     color: #2e4f6f;
     opacity: 0.7;
+}
+
+/* Адаптив */
+@media (max-width: 425px) {
+    .profile-container {
+        flex-direction: column;
+        max-width: 100%;
+        margin: 0 10px;
+        gap: 15px;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+    }
 }
