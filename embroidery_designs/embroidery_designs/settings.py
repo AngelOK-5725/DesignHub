@@ -103,6 +103,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
 
 # FreeKassa settings
 FREEMASSKA_MERCHANT_ID = 'your_merchant_id'
@@ -135,7 +137,10 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email',
         ],
-        
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
     },
     
     'github': {
@@ -144,5 +149,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'repo',
             'read:org',
         ],
+        "VERIFIED_EMAIL": True,
+        
     }
 }

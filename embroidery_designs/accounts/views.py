@@ -17,7 +17,6 @@ from django.contrib.auth.views import (
 
 
 
-
 def profile(request):
     return render(request, 'accounts/profile.html')
 

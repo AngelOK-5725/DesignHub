@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 
 {% load socialaccount %}
+{% load static %}
+{% block extra_css %}
+<link href="{% static 'css/login.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card">  
             <div class="card-header">
                 <h4 class="mb-0">Вход</h4>
             </div>
@@ -31,12 +35,16 @@
                 <div class="text-center mt-3">
                     <p>или войдите через соцсети:</p>
 
-                    <a href="{% provider_login_url 'google' %}" class="btn btn-danger w-100 mb-2">
-                        <i class="fab fa-google me-2"></i> Войти через Google
+                    <a href="{% provider_login_url 'google' process='login' next='/'%}" class="btn btn-danger">
+                        <i class="fab fa-google me-2"></i>
                     </a>
 
-                    <a href="{% provider_login_url 'github' %}" class="btn btn-dark w-100">
-                        <i class="fab fa-github me-2"></i> Войти через GitHub
+                    {% comment %} <a href="{% provider_login_url 'google' %}" class="btn btn-danger w-100 mb-2">
+                        <i class="fab fa-google me-2"></i> Войти через Google
+                    </a> {% endcomment %}
+
+                    <a href="{% provider_login_url 'github' process='login' next='/' %}" class="btn btn-dark">
+                        <i class="fab fa-github me-2"></i>
                     </a>
                 </div>
                 
