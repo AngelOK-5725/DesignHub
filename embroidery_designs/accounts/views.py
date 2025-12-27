@@ -15,7 +15,8 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
 )
 
-
+def favorite_designs(requests):
+    ...
 
 def profile(request):
     return render(request, 'accounts/profile.html')

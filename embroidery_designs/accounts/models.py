@@ -12,3 +12,4 @@ from django.db import models
 #     organization = models.CharField(max_length=200, blank=True)
 #     portfolio_link = models.URLField(blank=True, null=True)
 #     last_purchase_date = models.DateField(blank=True, null=True)
+#     favorite_designs =

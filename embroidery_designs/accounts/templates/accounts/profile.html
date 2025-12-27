@@ -1,88 +1,81 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Профиль пользователя{% endblock %}
+{% block title %}Профиль{% endblock %}
 
 {% block extra_css %}
-<link href="{% static 'css/profile.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<div class="profile-container">
+<div class="profile-page">
 
-    <!-- Левая колонка -->
-    <aside class="profile-sidebar">
-
-        <div class="avatar-block">
-            <img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-img" alt="avatar">
-            <h3 class="username">{{ user.username }}</h3>
-            <p class="email">{{ user.email }}</p>
+    <!-- HEADER -->
+    <section class="profile-header">
+        <div class="profile-header-left">
+            <img src="{% static 'img/avatar-placeholder.png' %}" class="profile-avatar">
+            <div>
+                <h1>{{ user.username }}</h1>
+                <p>{{ user.email }}</p>
+            </div>
         </div>
 
-        <div class="info-mini">
-            <p><strong>Страна:</strong> {{ user.profile.country|default:"Не указано" }}</p>
-            <p><strong>Город:</strong> {{ user.profile.city|default:"Не указано" }}</p>
-        </div>
-
-        <div class="sidebar-buttons">
-            <a class="btn-edit" href="#">Редактировать профиль</a>
-
+        <div class="profile-actions">
+            <a href="#" class="btn-outline">Редактировать</a>
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
-                <button type="submit" class="btn-logout">Выйти</button>
+                <button class="btn-danger">Выйти</button>
             </form>
         </div>
+    </section>
 
-    </aside>
+    <!-- STATS -->
+    <section class="profile-stats">
+        <div class="stat-card">
+            <span>Избранное</span>
+            <strong>{{ user.favorites.count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Последняя покупка</span>
+            <strong>{{ user.profile.last_purchase_date|default:"—" }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Организация</span>
+            <strong>{{ user.profile.organization|default:"—" }}</strong>
+        </div>
+    </section>
 
+    <!-- INFO -->
+    <section class="profile-section">
+        <h2>Информация</h2>
 
-    <!-- Правая часть -->
-    <main class="profile-main">
+        <div class="info-list">
+            <div><span>Страна</span><p>{{ user.profile.country|default:"Не указано" }}</p></div>
+            <div><span>Город</span><p>{{ user.profile.city|default:"Не указано" }}</p></div>
+        </div>
+    </section>
 
-        <!-- Блок информации -->
-        <section class="section-block">
-            <h2>Информация</h2>
+    <!-- FAVORITES -->
+    <section class="profile-section">
+        <h2>Избранные дизайны</h2>
 
-            <div class="info-grid">
-
-                <div class="info-card">
-                    <span class="label">Организация</span>
-                    <span class="value">{{ user.profile.organization|default:"—" }}</span>
+        {% if user.favorites.exists %}
+        <div class="favorites-grid">
+            {% for fav in user.favorites.all %}
+            <div class="favorite-card">
+                <img src="{{ fav.design.preview.url }}">
+                <div class="favorite-info">
+                    <h4>{{ fav.design.name }}</h4>
+                    <a href="{% url 'design_detail' fav.design.id %}">Смотреть →</a>
                 </div>
-
-                
-
-                <div class="info-card">
-                    <span class="label">Последняя покупка</span>
-                    <span class="value">{{ user.profile.last_purchase_date|default:"—" }}</span>
-                </div>
-
             </div>
-        </section>
-
-        <!-- Избранные дизайны -->
-        <section class="section-block">
-            <h2>Избранные дизайны</h2>
-
-            {% if user.favorites.exists %}
-            <div class="favorites-grid">
-                {% for fav in user.favorites.all %}
-                <div class="fav-card">
-                    <img src="{{ fav.design.preview.url }}" class="fav-img">
-                    <div class="fav-info">
-                        <h4>{{ fav.design.name }}</h4>
-                        <a href="{% url 'design_detail' fav.design.id %}" class="more-btn">Подробнее</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-                <p class="no-fav">Вы пока не добавили дизайны в избранное.</p>
-            {% endif %}
-        </section>
-
-    </main>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="empty">У вас пока нет избранных дизайнов</p>
+        {% endif %}
+    </section>
 
 </div>
 
