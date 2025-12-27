@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.conf import settings
-from designs.models import Design, Purchase
+from designs.models import Design
+from .models import Purchase
 
 @login_required
 def create_payment(request, design_id):
@@ -58,7 +59,10 @@ def payment_success(request):
         Purchase.objects.get_or_create(
             user=user,
             design=design,
-            transaction_id=order_id
+            transaction_id=order_id,
+            defaults={
+                'amount': amount
+            }
         )
         
         return HttpResponse('YES')  # FreeKassa ожидает YES при успехе

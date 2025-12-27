@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from payments.models import Purchase
 from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -15,11 +16,22 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
 )
 
+
+
 def favorite_designs(requests):
     ...
 
+@login_required
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    purchases = Purchase.objects.filter(
+        user=request.user
+    ).select_related('design').order_by('-created_at')
+
+    return render(request, 'accounts/profile.html', {
+        'purchases': purchases
+    })
+
+
 
 def register(request):
     if request.method == 'POST':

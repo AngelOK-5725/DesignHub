@@ -165,3 +165,48 @@ body {
 .empty {
     color: var(--muted);
 }
+
+/* PURCHASES */
+.purchases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.purchase-card {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 20px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.purchase-card img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.purchase-center h4 {
+    margin: 0;
+}
+
+.purchase-center .date,
+.purchase-center .txn {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.purchase-right {
+    text-align: right;
+}
+
+.purchase-right .price {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}

@@ -5,7 +5,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Design, Category, Purchase
+from .models import Design, Category
+from payments.models import Purchase
+
 
 from django.http import FileResponse, HttpResponse, JsonResponse
 from .forms import RatingForm

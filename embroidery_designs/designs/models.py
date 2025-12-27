@@ -11,6 +11,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from .validators import validate_embroidery_file
 from django.core.files.storage import FileSystemStorage
+# from payments.models import Purchase
 
 
 class PlusFriendlyStorage(FileSystemStorage):
@@ -190,7 +191,9 @@ class Design(models.Model):
         }
     
     def get_purchase_count(self):
+        from payments.models import Purchase
         return Purchase.objects.filter(design=self).count()
+
     
     def get_user_rating(self, user):
         if not user.is_authenticated:
@@ -228,17 +231,17 @@ class DesignVariant(models.Model):
 
 # Остальные модели (Purchase, DesignRating, DesignReview) остаются без изменений
 
-class Purchase(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    design = models.ForeignKey(Design, on_delete=models.CASCADE)
-    purchased_at = models.DateTimeField(auto_now_add=True)
-    transaction_id = models.CharField(max_length=100, blank=True)
+# class Purchase(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     design = models.ForeignKey(Design, on_delete=models.CASCADE)
+#     purchased_at = models.DateTimeField(auto_now_add=True)
+#     transaction_id = models.CharField(max_length=100, blank=True)
     
-    class Meta:
-        unique_together = ['user', 'design']
+#     class Meta:
+#         unique_together = ['user', 'design']
     
-    def __str__(self):
-        return f"{self.user.username} - {self.design.title}"
+#     def __str__(self):
+#         return f"{self.user.username} - {self.design.title}"
 
 class DesignRating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

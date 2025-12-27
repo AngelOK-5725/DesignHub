@@ -76,6 +76,44 @@
             <p class="empty">У вас пока нет избранных дизайнов</p>
         {% endif %}
     </section>
+    <!-- PURCHASES -->
+    <section class="profile-section">
+        <h2>Мои покупки</h2>
+
+        {% if purchases %}
+        <div class="purchases-list">
+
+            {% for purchase in purchases %}
+            <div class="purchase-card">
+                <div class="purchase-left">
+                    <img src="{{ purchase.design.preview.url }}">
+                </div>
+
+                <div class="purchase-center">
+                    <h4>{{ purchase.design.name }}</h4>
+                    <p class="date">
+                        {{ purchase.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                    <p class="txn">
+                        Чек № {{ purchase.transaction_id }}
+                    </p>
+                </div>
+
+                <div class="purchase-right">
+                    <span class="price">{{ purchase.amount }} ₽</span>
+                    <a href="{% url 'design_detail' purchase.design.id %}" class="btn-outline">
+                        Открыть
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+        {% else %}
+            <p class="empty">Покупок пока нет</p>
+        {% endif %}
+    </section>
+
 
 </div>
 

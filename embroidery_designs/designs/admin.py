@@ -17,7 +17,7 @@
 #     get_file_extension.short_description = 'Формат'
 
 from django.contrib import admin
-from .models import Category, Design, Purchase, DesignRating, DesignReview, HoopSize, DesignVariant
+from .models import Category, Design, DesignRating, DesignReview, HoopSize, DesignVariant
 
 @admin.register(HoopSize)
 class HoopSizeAdmin(admin.ModelAdmin):
