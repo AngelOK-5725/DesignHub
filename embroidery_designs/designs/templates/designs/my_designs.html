@@ -36,6 +36,9 @@
                         <a href="{{ design.design_file.url }}" class="btn btn-success w-100" download="{{ design.title }}.{{ design.get_file_extension|lower }}">
                             <i class="fas fa-download"></i> Скачать
                         </a>
+                        <a href="{% url 'item_info' design.id %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-info-circle"></i> Подробнее
+                        </a>
                     </div>
                 </div>
             </div>
@@ -81,5 +84,9 @@
     border-top: 1px solid #eee;
     padding-top: 10px;
 }
+a {
+    margin: 0 0 15px;
+}
+
 </style>
 {% endblock %}

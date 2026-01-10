@@ -2,22 +2,19 @@
 
 # Register your models here.
 
-# from django.contrib import admin
-# from .models import Category, Design, Purchase
-
-# @admin.register(Design)
-# class DesignAdmin(admin.ModelAdmin):
-#     list_display = ['title', 'price', 'category', 'machine_type', 'get_file_extension', 'is_active']
-#     list_filter = ['category', 'machine_type', 'is_active']
-#     search_fields = ['title', 'description']
-#     list_editable = ['price', 'is_active']
-    
-#     def get_file_extension(self, obj):
-#         return obj.get_file_extension()
-#     get_file_extension.short_description = 'Формат'
-
 from django.contrib import admin
-from .models import Category, Design, DesignRating, DesignReview, HoopSize, DesignVariant
+from .models import Category, Design, DesignRating, DesignReview, HoopSize, DesignVariant, MachineType
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ('name',)
+
+@admin.register(MachineType)
+class MachineTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(HoopSize)
 class HoopSizeAdmin(admin.ModelAdmin):
@@ -31,15 +28,23 @@ class DesignVariantAdmin(admin.ModelAdmin):
 
 @admin.register(Design)
 class DesignAdmin(admin.ModelAdmin):
-    list_display = ['title', 'price', 'category', 'machine_type', 'design_width', 'design_height', 'stitch_count', 'is_active']
-    list_filter = ['category', 'machine_type', 'compatible_hoops', 'is_active']
-    search_fields = ['title', 'description']
-    list_editable = ['price', 'stitch_count', 'is_active']
-    filter_horizontal = ['compatible_hoops']
-    
+    list_display = (
+        'title',
+        'category',
+        'design_width',
+        'design_height',
+        'stitch_count',
+        'is_active'
+    )
+
+    list_filter = ('category', 'machine_types', 'is_active')
+    search_fields = ('title', 'description')
+    list_editable = ('stitch_count', 'is_active')
+    filter_horizontal = ('compatible_hoops', 'machine_types')
+
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'description', 'price', 'category', 'machine_type')
+            'fields': ('title', 'description', 'category', 'machine_types')
         }),
         ('Размеры и стежки', {
             'fields': ('design_width', 'design_height', 'stitch_count', 'compatible_hoops')
@@ -51,4 +56,3 @@ class DesignAdmin(admin.ModelAdmin):
             'fields': ('is_active',)
         }),
     )
-# Остальные admin регистрации...

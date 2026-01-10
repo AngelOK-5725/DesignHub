@@ -10,4 +10,6 @@ urlpatterns = [
     path('download-full/<int:design_id>/', views.download_design_full, name='download_design_full'),
     path('design/<int:design_id>/rate/', views.rate_design, name='rate_design'),
     path('design/<int:design_id>/stats/', views.get_design_stats, name='design_stats'),
+    path('design/<int:design_id>/toggle-favorite/', views.toggle_favorite_ajax, name='toggle_favorite_ajax')
+
 ]

@@ -58,23 +58,28 @@
 
     <!-- FAVORITES -->
     <section class="profile-section">
-        <h2>Избранные дизайны</h2>
+        <h3>Избранные дизайны</h3>
 
-        {% if user.favorites.exists %}
-        <div class="favorites-grid">
-            {% for fav in user.favorites.all %}
-            <div class="favorite-card">
-                <img src="{{ fav.design.preview.url }}">
-                <div class="favorite-info">
-                    <h4>{{ fav.design.name }}</h4>
-                    <a href="{% url 'design_detail' fav.design.id %}">Смотреть →</a>
-                </div>
+        {% if favorites %}
+            <div class="row">
+                {% for fav in favorites %}
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <img src="{{ fav.design.image_preview.url }}" class="card-img-top">
+                            <div class="card-body">
+                                <h5>{{ fav.design.title }}</h5>
+                                <a href="{% url 'design_detail' fav.design.id %}" class="btn btn-primary">
+                                    Открыть
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
         {% else %}
-            <p class="empty">У вас пока нет избранных дизайнов</p>
+            <p>У вас пока нет избранных дизайнов</p>
         {% endif %}
+
     </section>
     <!-- PURCHASES -->
     <section class="profile-section">
@@ -100,8 +105,8 @@
                 </div>
 
                 <div class="purchase-right">
-                    <span class="price">{{ purchase.amount }} ₽</span>
-                    <a href="{% url 'design_detail' purchase.design.id %}" class="btn-outline">
+                <span class="price">{{ purchase.amount }} {{ purchase.design.price.currency }}</span>
+                    <a href="{% url 'item_info' purchase.design.id %}" class="btn-outline">
                         Открыть
                     </a>
                 </div>

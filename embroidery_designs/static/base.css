@@ -1,0 +1,25 @@
+/* body{
+    background-color: aqua;
+} */
+@media screen and (max-width: 750px) {
+    .navbar-nav ms-auto{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }    
+}
+
+
+@media screen and (max-width: 420px) { 
+    .navbar-nav ms-auto{
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+}

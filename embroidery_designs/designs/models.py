@@ -11,13 +11,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from .validators import validate_embroidery_file
 from django.core.files.storage import FileSystemStorage
-# from payments.models import Purchase
-
 
 class PlusFriendlyStorage(FileSystemStorage):
     def get_valid_name(self, name):
-        name = name.strip().replace(' ', '_')
-        return name
+        return name.strip().replace(' ', '_')
 
 class HoopSize(models.Model):
     HOOP_CHOICES = [
@@ -67,54 +64,58 @@ def upload_to_original(instance, filename):
     else:
         return f"designs/files/{new_filename}"
 
+class MachineType(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Тип машины'
+        verbose_name_plural = 'Типы машин'
+
+
 class Design(models.Model):
-    MACHINE_CHOICES = [
-        ('janome', 'Janome'),
-        ('brother', 'Brother'),
-        ('both', 'Both'),
-    ]
     
     title = models.CharField(max_length=200)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    machine_type = models.CharField(max_length=10, choices=MACHINE_CHOICES)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='designs'
+    )
+
+    machine_types = models.ManyToManyField(
+        MachineType,
+        related_name='designs',
+        blank=True
+    )
+
     
     # Размеры дизайна
     design_width = models.IntegerField(help_text="Ширина дизайна в мм", default=100)
     design_height = models.IntegerField(help_text="Высота дизайна в мм", default=100)
     
     # Количество стежков
-    stitch_count = models.IntegerField(
-        default=0,
-        help_text="Общее количество стежков в дизайне"
-    )
+    stitch_count = models.IntegerField(default=0, help_text="Общее количество стежков в дизайне")
     
     # Для совместимости со старыми данными
-    design_size = models.CharField(
-        max_length=100, 
-        help_text="Размер дизайна в мм (например: 100x100)",
-        blank=True,
-        default="100x100"
-    )
+    design_size = models.CharField(max_length=100, help_text="Размер дизайна в мм (например: 100x100)",
+                                    blank=True, default="100x100")
     
     # Совместимые пяльца
     compatible_hoops = models.ManyToManyField(
-        HoopSize, 
+        HoopSize,
         blank=True,
         verbose_name="Совместимые пяльца",
         help_text="Выберите пяльца, для которых подходит этот дизайн"
     )
     
     image_preview = models.ImageField(upload_to='designs/previews/')
-    
     plus_storage = PlusFriendlyStorage()
-
-    design_file = models.FileField(
-        upload_to=upload_to_original,
-        storage=plus_storage,
-        validators=[validate_embroidery_file]
-    )
+    design_file = models.FileField(upload_to=upload_to_original, storage=plus_storage,
+                                    validators=[validate_embroidery_file])
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -127,73 +128,48 @@ class Design(models.Model):
         return self.title
     
     def save(self, *args, **kwargs):
-        # Автоматически обновляем design_size
         self.design_size = f"{self.design_width}x{self.design_height}"
         super().save(*args, **kwargs)
-        # Обновляем совместимые пяльца
         self.update_compatible_hoops()
     
     def get_compatible_hoops(self):
-        """Автоматически определяет совместимые пяльца"""
         if not self.design_width or not self.design_height:
             return HoopSize.objects.none()
-        
-        compatible = HoopSize.objects.filter(
-            width__gte=self.design_width,
-            height__gte=self.design_height
-        )
-        return compatible
+        return HoopSize.objects.filter(width__gte=self.design_width, height__gte=self.design_height)
     
     def update_compatible_hoops(self):
-        """Обновляет список совместимых пялец"""
         auto_compatible = self.get_compatible_hoops()
         self.compatible_hoops.set(auto_compatible)
     
     def get_available_hoops_display(self):
-        """Возвращает строку с доступными пяльцами для отображения"""
         hoops = self.compatible_hoops.all()
         if hoops:
             return ", ".join([hoop.code for hoop in hoops])
         return "Не указано"
     
     def get_stitch_count_display(self):
-        """Форматирует количество стежков для отображения"""
         if self.stitch_count >= 1000:
             return f"{self.stitch_count:,} стежков".replace(',', ' ')
         return f"{self.stitch_count} стежков"
     
     def get_file_extension(self):
         if self.design_file:
-            ext = os.path.splitext(self.design_file.name)[1]
-            return ext.upper().replace('.', '')
+            return os.path.splitext(self.design_file.name)[1].upper().replace('.', '')
         return ""
     
     def get_rating_stats(self):
         ratings = DesignRating.objects.filter(design=self)
         if not ratings.exists():
-            return {
-                'average': 0,
-                'count': 0,
-                'distribution': {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-            }
+            return {'average': 0, 'count': 0, 'distribution': {i: 0 for i in range(1,6)}}
         
         total = ratings.count()
         average = sum(r.rating for r in ratings) / total
-        
-        distribution = {}
-        for i in range(1, 6):
-            distribution[i] = ratings.filter(rating=i).count()
-        
-        return {
-            'average': round(average, 1),
-            'count': total,
-            'distribution': distribution
-        }
+        distribution = {i: ratings.filter(rating=i).count() for i in range(1,6)}
+        return {'average': round(average,1), 'count': total, 'distribution': distribution}
     
     def get_purchase_count(self):
         from payments.models import Purchase
         return Purchase.objects.filter(design=self).count()
-
     
     def get_user_rating(self, user):
         if not user.is_authenticated:
@@ -202,23 +178,24 @@ class Design(models.Model):
             return DesignRating.objects.get(user=user, design=self).rating
         except DesignRating.DoesNotExist:
             return None
+        
+    def is_favorite_for_user(self, user):
+        if not user.is_authenticated:
+            return False
+        return self.favorites.filter(user=user).exists()
+
+    
+    @property
+    def final_price(self):
+        from payments.services import get_final_price
+        return get_final_price(self)['final_price']
 
 class DesignVariant(models.Model):
-    """
-    Модель для вариантов дизайна под разные пяльца
-    (если у одного дизайна есть несколько версий под разные размеры)
-    """
     design = models.ForeignKey(Design, on_delete=models.CASCADE, related_name='variants')
     hoop = models.ForeignKey(HoopSize, on_delete=models.CASCADE)
-    variant_file = models.FileField(
-        upload_to='designs/variants/',
-        storage=PlusFriendlyStorage(),
-        validators=[validate_embroidery_file]
-    )
-    stitch_count = models.IntegerField(
-        default=0,
-        help_text="Количество стежков для этого варианта"
-    )
+    variant_file = models.FileField(upload_to='designs/variants/', storage=PlusFriendlyStorage(),
+                                    validators=[validate_embroidery_file])
+    stitch_count = models.IntegerField(default=0, help_text="Количество стежков для этого варианта")
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -229,24 +206,10 @@ class DesignVariant(models.Model):
     def __str__(self):
         return f"{self.design.title} - {self.hoop.code}"
 
-# Остальные модели (Purchase, DesignRating, DesignReview) остаются без изменений
-
-# class Purchase(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     design = models.ForeignKey(Design, on_delete=models.CASCADE)
-#     purchased_at = models.DateTimeField(auto_now_add=True)
-#     transaction_id = models.CharField(max_length=100, blank=True)
-    
-#     class Meta:
-#         unique_together = ['user', 'design']
-    
-#     def __str__(self):
-#         return f"{self.user.username} - {self.design.title}"
-
 class DesignRating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     design = models.ForeignKey(Design, on_delete=models.CASCADE)
-    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
+    rating = models.IntegerField(choices=[(i,i) for i in range(1,6)])
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -264,3 +227,25 @@ class DesignReview(models.Model):
     class Meta:
         verbose_name = 'Отзыв о дизайне'
         verbose_name_plural = 'Отзывы о дизайнах'
+
+class FavoriteDesign(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorite_designs'
+    )
+    design = models.ForeignKey(
+        Design,
+        on_delete=models.CASCADE,
+        related_name='favorites'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'design')
+        verbose_name = 'Избранный дизайн'
+        verbose_name_plural = 'Избранные дизайны'
+
+    def __str__(self):
+        return f'{self.user.username} ❤️ {self.design.title}'
+

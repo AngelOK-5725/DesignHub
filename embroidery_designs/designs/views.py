@@ -3,9 +3,10 @@
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Design, Category
+from .models import Design, Category, FavoriteDesign
 from payments.models import Purchase
 
 
@@ -16,6 +17,30 @@ from .models import DesignRating
 import zipfile
 import os
 from django.conf import settings
+
+from payments.services import get_final_price
+
+@login_required
+@require_POST
+def toggle_favorite_ajax(request, design_id):
+    design = get_object_or_404(Design, id=design_id, is_active=True)
+
+    favorite, created = FavoriteDesign.objects.get_or_create(
+        user=request.user,
+        design=design
+    )
+
+    if not created:
+        favorite.delete()
+        is_favorite = False
+    else:
+        is_favorite = True
+
+    return JsonResponse({
+        'is_favorite': is_favorite,
+        'favorites_count': design.favorites.count()
+})
+
 
 @login_required
 def download_design_full(request, design_id):
@@ -117,6 +142,8 @@ def get_design_stats(request, design_id):
         'purchase_count': design.get_purchase_count()
     })
 
+from payments.services import get_final_price
+
 def design_list(request):
     category_id = request.GET.get('category')
     machine_type = request.GET.get('machine_type')
@@ -143,34 +170,52 @@ def design_list(request):
     paginator = Paginator(designs, 12)
     designs_page = paginator.get_page(page)
     
+    # Добавляем цену и скидку к каждому дизайну
+    designs_with_price = []
+    for design in designs_page:
+        price_data = get_final_price(design)
+        designs_with_price.append({
+            'design': design,
+            'price_data': price_data
+        })
+    
     context = {
-        'designs': designs_page,
+        'designs': designs_with_price,
         'categories': categories,
+        'paginator': paginator,
     }
-    return render(request, 'designs/all_items.html', context)
+    return render(request, 'designs/all_items-ru.html', context)
 
 def item_info(request, design_id):
     design = get_object_or_404(Design, id=design_id, is_active=True)
+
     purchased = False
-    
+    is_favorite = False
+
     if request.user.is_authenticated:
-        purchased = Purchase.objects.filter(
-            user=request.user, 
+        purchased = Purchase.objects.filter(user=request.user, design=design).exists()
+        is_favorite = FavoriteDesign.objects.filter(
+            user=request.user,
             design=design
         ).exists()
-    
-    # Похожие дизайны
+
+    price_data = get_final_price(design)
+
+    # --- Получаем похожие дизайны ---
     similar_designs = Design.objects.filter(
-        category=design.category,
+        category=design.category, 
         is_active=True
-    ).exclude(id=design.id)[:6]
-    
+    ).exclude(id=design.id)[:6]  # ограничиваем до 6 штук
+
     context = {
         'design': design,
         'purchased': purchased,
-        'similar_designs': similar_designs,
+        'is_favorite': is_favorite,
+        'price_data': price_data,
+        'similar_designs': similar_designs,  # добавили переменную
     }
     return render(request, 'designs/item_info.html', context)
+
 
 @login_required
 def my_designs(request):
