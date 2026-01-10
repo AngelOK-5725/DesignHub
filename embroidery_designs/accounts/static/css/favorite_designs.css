@@ -1,0 +1,118 @@
+/* ============================= */
+/*        SKETCH FAVORITES       */
+/* ============================= */
+
+
+.favorites-section.sketch {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+
+.favorites-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 36px;
+    position: relative;
+}
+
+/* Сетка с воздухом */
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 36px;
+}
+
+/* Карточка */
+.sketch-card {
+    background: #fffdf9;
+    border-radius: 18px;
+    padding: 16px;
+    position: relative;
+    transition: transform 0.25s ease;
+}
+
+/* Неровная рамка */
+.sketch-card::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 2px dashed #222;
+    border-radius: 22px;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* Бумажная тень */
+.sketch-card {
+    box-shadow:
+        3px 3px 0 rgba(0, 0, 0, 0.06),
+        6px 6px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Hover — как набросок */
+.sketch-card:hover {
+    transform: rotate(-0.6deg) translateY(-6px);
+}
+
+/* Ссылка */
+.favorite-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Картинка */
+.sketch-image-wrapper {
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+.sketch-image-wrapper img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+/* Контент */
+.sketch-content {
+    padding: 4px 6px;
+}
+
+/* Заголовок */
+.sketch-title {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    position: relative;
+}
+
+/* Подчёркивание как карандаш */
+.sketch-title::after {
+    content: "";
+    display: block;
+    width: 60%;
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #000,
+        #000 6px,
+        transparent 6px,
+        transparent 10px
+    );
+    margin: 10px auto 0;
+    opacity: 0.4;
+}
+
+/* Пустое состояние */
+.favorites-empty {
+    font-size: 16px;
+    text-align: center;
+    margin-top: 48px;
+    color: #666;
+}

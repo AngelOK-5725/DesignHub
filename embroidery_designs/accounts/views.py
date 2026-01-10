@@ -9,6 +9,7 @@ from payments.models import Purchase
 from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
+from designs.models import FavoriteDesign
 from django.contrib.auth.views import (
     PasswordResetView,
     PasswordResetDoneView,
@@ -18,17 +19,45 @@ from django.contrib.auth.views import (
 
 
 
-def favorite_designs(requests):
-    ...
+@login_required
+def favorite_designs(request):
+    """
+    Избранные дизайны пользователя (лайкнутые сердечком)
+    """
+    favorites = (
+        FavoriteDesign.objects
+        .filter(user=request.user)
+        .select_related('design')
+        .order_by('-created_at')
+    )
 
+    return render(request, 'accounts/favorite_designs.html', {
+        'favorites': favorites
+    })
+
+
+# @login_required
+# def profile(request):
+#     purchases = Purchase.objects.filter(
+#         user=request.user
+#     ).select_related('design').order_by('-created_at')
+
+#     return render(request, 'accounts/profile.html', {
+#         'purchases': purchases
+#     })
 @login_required
 def profile(request):
     purchases = Purchase.objects.filter(
         user=request.user
     ).select_related('design').order_by('-created_at')
 
+    favorites_count = FavoriteDesign.objects.filter(
+        user=request.user
+    ).count()
+
     return render(request, 'accounts/profile.html', {
-        'purchases': purchases
+        'purchases': purchases,
+        'favorites_count': favorites_count,
     })
 
 

@@ -32,16 +32,18 @@
 
     <!-- STATS -->
     <section class="profile-stats">
+        <a href="{% url 'favorite_designs' %}" class="stat-link">
+            <div class="stat-card">
+                <div class="stat-title">♥️<span> Избранное</span></div>
+                <strong>{{ favorites_count }}</strong>
+            </div>
+        </a>
         <div class="stat-card">
-            <span>Избранное</span>
-            <strong>{{ user.favorites.count }}</strong>
-        </div>
-        <div class="stat-card">
-            <span>Последняя покупка</span>
+            <div class="stat-title">💸<span>Последняя покупка</span></div>
             <strong>{{ user.profile.last_purchase_date|default:"—" }}</strong>
         </div>
         <div class="stat-card">
-            <span>Организация</span>
+            <div class="stat-title">🏢<span>Организация</span></div>
             <strong>{{ user.profile.organization|default:"—" }}</strong>
         </div>
     </section>
@@ -57,7 +59,7 @@
     </section>
 
     <!-- FAVORITES -->
-    <section class="profile-section">
+    {% comment %} <section class="profile-section">
         <h3>Избранные дизайны</h3>
 
         {% if favorites %}
@@ -65,10 +67,17 @@
                 {% for fav in favorites %}
                     <div class="col-md-4">
                         <div class="card mb-3">
-                            <img src="{{ fav.design.image_preview.url }}" class="card-img-top">
+                            <img src="{{ fav.design.image_preview.url }}"
+                                class="card-img-top"
+                                alt="{{ fav.design.title }}">
+
                             <div class="card-body">
-                                <h5>{{ fav.design.title }}</h5>
-                                <a href="{% url 'design_detail' fav.design.id %}" class="btn btn-primary">
+                                <h5 class="card-title">
+                                    {{ fav.design.title }}
+                                </h5>
+
+                                <a href="{% url 'item_info' fav.design.id %}"
+                                    class="btn btn-outline-primary w-100">
                                     Открыть
                                 </a>
                             </div>
@@ -77,10 +86,10 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p>У вас пока нет избранных дизайнов</p>
-        {% endif %}
-
+            <p class="text-muted">У вас пока нет избранных дизайнов</p>
+        {% endif %} {% endcomment %}
     </section>
+
     <!-- PURCHASES -->
     <section class="profile-section">
         <h2>Мои покупки</h2>
