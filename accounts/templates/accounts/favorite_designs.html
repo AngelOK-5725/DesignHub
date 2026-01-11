@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/favorite_designs.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<section class="favorites-section sketch">
+
+    <h2 class="favorites-title">❤️ Избранное</h2>
+
+    {% if favorites %}
+        <div class="favorites-grid">
+            {% for fav in favorites %}
+                <div class="favorite-card sketch-card">
+                    
+                    <a href="{% url 'item_info' fav.design.id %}" class="favorite-link">
+                        
+                        <div class="sketch-image-wrapper">
+                            <img 
+                                src="{{ fav.design.image_preview.url }}" 
+                                alt="{{ fav.design.title }}"
+                            >
+                        </div>
+
+                        <div class="sketch-content">
+                            <h3 class="sketch-title">
+                                {{ fav.design.title }}
+                            </h3>
+                        </div>
+
+                    </a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="favorites-empty">Пока ничего не добавлено 🤍</p>
+    {% endif %}
+
+</section>
+{% endblock %}

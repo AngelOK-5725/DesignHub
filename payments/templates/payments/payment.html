@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Payment for {{ design.title }}</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Price:</strong> ${{ design.price }}</p>
+                <p><strong>Machine:</strong> {{ design.get_machine_type_display }}</p>
+                
+                <form method="POST" action="https://pay.freekassa.com/">
+                    <input type="hidden" name="m" value="{{ merchant_id }}">
+                    <input type="hidden" name="oa" value="{{ amount }}">
+                    <input type="hidden" name="o" value="{{ order_id }}">
+                    <input type="hidden" name="s" value="{{ signature }}">
+                    <input type="hidden" name="em" value="{{ user_email }}">
+                    <input type="hidden" name="lang" value="ru">
+                    
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        Pay with FreeKassa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
