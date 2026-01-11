@@ -22,8 +22,8 @@ env/
 *.pot
 *.py[cod]
 
-db.sqlite3-journal
-*.sqlite3
+# db.sqlite3-journal
+# *.sqlite3
 
 # Uploaded media files
 media/
