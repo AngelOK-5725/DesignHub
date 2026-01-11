@@ -107,9 +107,16 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 # FreeKassa settings
-FREEMASSKA_MERCHANT_ID = 'your_merchant_id'
-FREEMASSKA_SECRET_KEY = 'your_secret_key'
-FREEMASSKA_SECRET_KEY2 = 'your_secret_key2'
+FREEKASSA_MERCHANT_ID = os.getenv("FREEKASSA_MERCHANT_ID")
+FREEKASSA_SECRET_1 = os.getenv("FREEKASSA_SECRET_1")
+FREEKASSA_SECRET_2 = os.getenv("FREEKASSA_SECRET_2")
+
+FREEKASSA_CURRENCIES = {
+    'RUB': 'RUB',
+    'USD': 'USD',
+    'KZT': 'KZT',
+}
+
 
 # Забыли пароль email settings
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

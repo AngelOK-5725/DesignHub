@@ -15,6 +15,48 @@ from .models import Purchase, Discount
 from django.utils import timezone
 
 
+import uuid
+from .models import Payment
+
+def start_payment(request, design_id):
+    design = get_object_or_404(Design, id=design_id)
+
+    currency = request.POST.get("currency", "KZT")
+
+    prices = {
+        'KZT': design.price_kzt,
+        'RUB': design.price_rub,
+        'USD': design.price_usd,
+    }
+
+    amount = prices[currency]
+
+    order_id = str(uuid.uuid4())
+
+    Payment.objects.create(
+        user=request.user,
+        design=design,
+        amount=amount,
+        currency=currency,
+        order_id=order_id
+    )
+
+    sign = hashlib.md5(
+        f"{settings.FREEKASSA_MERCHANT_ID}:{amount}:{settings.FREEKASSA_SECRET_1}:{order_id}".encode()
+    ).hexdigest()
+
+    url = (
+        f"https://pay.freekassa.ru/?"
+        f"m={settings.FREEKASSA_MERCHANT_ID}"
+        f"&oa={amount}"
+        f"&o={order_id}"
+        f"&currency={currency}"
+        f"&s={sign}"
+    )
+
+    return redirect(url)
+
+
 @login_required
 def create_payment(request, design_id):
     design = get_object_or_404(Design, id=design_id, is_active=True)
