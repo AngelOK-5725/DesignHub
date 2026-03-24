@@ -248,10 +248,12 @@
                                                     </a>
                                                 </div>
                                             {% elif price_data.final_price == 0 %}
-                                                {# Бесплатно — кнопка покупки не нужна, скачивание внизу #}
                                                 <div class="alert alert-success">
                                                     <i class="fas fa-gift"></i> Этот дизайн бесплатный — скачайте его ниже!
                                                 </div>
+                                                <a href="{% url 'add_free_to_my_designs' design.id %}" class="btn btn-outline-success w-100">
+                                                    <i class="fas fa-plus"></i> Добавить в "Мои дизайны"
+                                                </a>
                                             {% else %}
                                                 <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
                                                     <i class="fas fa-shopping-cart"></i>

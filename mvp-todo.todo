@@ -176,8 +176,10 @@
               "content": "upgreid дать возможность добавлять беспланые дизайны в \"Мои дизайны\"",
               "id": 1774346799999,
               "level": "warning",
-              "done": false,
-              "start": 1774346799999
+              "done": true,
+              "start": 1774346799999,
+              "focus": false,
+              "end": 1774347373325
             }
           }
         ],
@@ -206,6 +208,7 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1774346885200"
+    "version": "1774347373389",
+    "page": "plan"
   }
 }

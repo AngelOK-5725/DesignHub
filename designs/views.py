@@ -147,6 +147,21 @@ def rate_design(request, design_id):
     
     return redirect('item_info', design_id=design_id)
 
+@login_required
+def add_free_to_my_designs(request, design_id):
+    design = get_object_or_404(Design, id=design_id)
+    
+    if design.final_price != 0:
+        return HttpResponse("Этот дизайн не бесплатный", status=403)
+    
+    Purchase.objects.get_or_create(
+        user=request.user,
+        design=design,
+        defaults={'amount': 0}
+    )
+    
+    return redirect('my_designs')
+
 def get_design_stats(request, design_id):
     """
     API для получения статистики дизайна
