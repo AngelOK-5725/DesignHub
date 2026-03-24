@@ -1,0 +1,211 @@
+{
+  "todotree": {
+    "tree": [
+      {
+        "key": 1774199659279,
+        "children": [
+          {
+            "key": 1774199686878,
+            "children": [],
+            "todo": {
+              "content": "сделать страницу 404 для all_items",
+              "id": 1774199686878,
+              "level": "default",
+              "done": false,
+              "start": 1774199686878,
+              "date": "1774200353,1774373176",
+              "focus": false,
+              "end": 1774249965641
+            }
+          },
+          {
+            "key": 1774249980299,
+            "children": [],
+            "todo": {
+              "content": "сделать показ валюты для all_items",
+              "id": 1774249980299,
+              "level": "success",
+              "done": true,
+              "start": 1774249980299,
+              "date": null,
+              "focus": false,
+              "end": 1774253677858
+            }
+          },
+          {
+            "key": 1774250047065,
+            "children": [],
+            "todo": {
+              "content": "сделать отображение показа поддердиваемых машин для all_items",
+              "id": 1774250047065,
+              "level": "default",
+              "done": true,
+              "start": 1774250047065,
+              "focus": false,
+              "end": 1774256008402
+            }
+          },
+          {
+            "key": 1774250122817,
+            "children": [],
+            "todo": {
+              "content": "сделать отобраджение валюты для item_info",
+              "id": 1774250122817,
+              "level": "success",
+              "done": true,
+              "start": 1774250122817,
+              "focus": false,
+              "end": 1774253680723
+            }
+          },
+          {
+            "key": 1774250157511,
+            "children": [],
+            "todo": {
+              "content": "сделать отображение поддерживаемых машин дизайна для item_info",
+              "id": 1774250157511,
+              "level": "default",
+              "done": true,
+              "start": 1774250157511,
+              "focus": false,
+              "end": 1774256009916
+            }
+          },
+          {
+            "key": 1774250194236,
+            "children": [],
+            "todo": {
+              "content": "upgreid добавить возможность писать комментарии к дизайнам, так же оставлять фото и видео записи",
+              "id": 1774250194236,
+              "level": "warning",
+              "done": false,
+              "start": 1774250194236,
+              "focus": false,
+              "end": 1774346872064
+            }
+          },
+          {
+            "key": 1774250274892,
+            "children": [],
+            "todo": {
+              "content": "пока нет связки с оплатой показывать страницу 404 или \"упс, что-то пошло не так\"",
+              "id": 1774250274892,
+              "level": "default",
+              "done": false,
+              "start": 1774250274892
+            }
+          },
+          {
+            "key": 1774250333901,
+            "children": [],
+            "todo": {
+              "content": "сделать настройки под США и запустить в сеть",
+              "id": 1774250333901,
+              "level": "danger",
+              "done": false,
+              "start": 1774250333901
+            }
+          },
+          {
+            "key": 1774250428623,
+            "children": [],
+            "todo": {
+              "content": "если стоимость = 0 то выводить запись \"free\" или \"бесплатно\" в аll_items и item_info",
+              "id": 1774250428623,
+              "level": "default",
+              "done": true,
+              "start": 1774250428623,
+              "focus": false,
+              "end": 1774335261639
+            }
+          },
+          {
+            "key": 1774257206090,
+            "children": [],
+            "todo": {
+              "content": "пофиксить работу фильтра в all_items",
+              "id": 1774257206090,
+              "level": "default",
+              "done": true,
+              "start": 1774257206090,
+              "focus": false,
+              "end": 1774329971380
+            }
+          },
+          {
+            "key": 1774329975229,
+            "children": [],
+            "todo": {
+              "content": "пофиксить дублирующиеся дизайны при применеиии фильтра janome + brother",
+              "id": 1774329975229,
+              "level": "default",
+              "done": true,
+              "start": 1774329975229,
+              "focus": false,
+              "end": 1774330073958
+            }
+          },
+          {
+            "key": 1774330274385,
+            "children": [],
+            "todo": {
+              "content": "сделать кнопку перключения языка (англ\\русс)",
+              "id": 1774330274385,
+              "level": "default",
+              "done": false,
+              "start": 1774330274386
+            }
+          },
+          {
+            "key": 1774335264988,
+            "children": [],
+            "todo": {
+              "content": "теперь пусть будет возможность скачать беплатный дизайн ПРИ условии что пользователь авторизирован",
+              "id": 1774335264988,
+              "level": "default",
+              "done": true,
+              "start": 1774335264988,
+              "focus": false,
+              "end": 1774346847126
+            }
+          },
+          {
+            "key": 1774346799999,
+            "children": [],
+            "todo": {
+              "content": "upgreid дать возможность добавлять беспланые дизайны в \"Мои дизайны\"",
+              "id": 1774346799999,
+              "level": "warning",
+              "done": false,
+              "start": 1774346799999
+            }
+          }
+        ],
+        "todo": {
+          "content": "mvp интернет магазина DesignHub",
+          "id": 1774199659279,
+          "level": "default",
+          "done": false,
+          "start": 1774199659280,
+          "focus": false,
+          "end": 1774250332453
+        }
+      }
+    ],
+    "expandKeys": [
+      1774199659279
+    ],
+    "schema": "https://github.com/Saber2pr/vsc-ext-todolist/blob/master/src/api/type.ts#L3",
+    "add_mode": "bottom",
+    "virtual": false,
+    "timelines": [],
+    "showLine": false,
+    "playFontSize": 24,
+    "title": "mvp-todo",
+    "autoSort": false,
+    "showEndTime": false,
+    "simpleMode": false,
+    "lang": "en",
+    "version": "1774346885200"
+  }
+}

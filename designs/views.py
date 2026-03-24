@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.db.models import Q
+from .models import Design, Category, FavoriteDesign, MachineType
 from django.core.paginator import Paginator
-from .models import Design, Category, FavoriteDesign
 from payments.models import Purchase
 
 
@@ -75,19 +75,37 @@ def download_design_full(request, design_id):
     
     return response
 
+# @login_required
+# def download_design(request, design_id):
+#     """Кастомное скачивание с правильными именами файлов"""
+#     design = get_object_or_404(Design, id=design_id)
+    
+#     # Проверяем, что пользователь купил этот дизайн
+#     if not Purchase.objects.filter(user=request.user, design=design).exists():
+#         return HttpResponse("У вас нет прав для скачивания этого файла", status=403)
+    
+#     response = FileResponse(design.design_file)
+    
+#     # Устанавливаем правильное имя файла
+#     filename = design.get_download_filename()
+#     response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+#     return response
 @login_required
 def download_design(request, design_id):
-    """Кастомное скачивание с правильными именами файлов"""
     design = get_object_or_404(Design, id=design_id)
     
-    # Проверяем, что пользователь купил этот дизайн
-    if not Purchase.objects.filter(user=request.user, design=design).exists():
+    is_free = design.final_price == 0
+    has_purchased = Purchase.objects.filter(user=request.user, design=design).exists()
+    
+    if not is_free and not has_purchased:
         return HttpResponse("У вас нет прав для скачивания этого файла", status=403)
     
     response = FileResponse(design.design_file)
     
-    # Устанавливаем правильное имя файла
-    filename = design.get_download_filename()
+    # Формируем имя файла вручную, без get_download_filename()
+    ext = design.get_file_extension().lower()
+    filename = f"{design.title}.{ext}"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     return response
@@ -145,18 +163,21 @@ def get_design_stats(request, design_id):
 from payments.services import get_final_price
 
 def design_list(request):
-    category_id = request.GET.get('category')
-    machine_type = request.GET.get('machine_type')
+    category_ids = [c for c in request.GET.getlist('category') if c]  # убираем пустые строки
+    machine_types = request.GET.getlist('machine_type')
+
     search_query = request.GET.get('search')
     page = request.GET.get('page', 1)
     
-    designs = Design.objects.filter(is_active=True)
+    designs = Design.objects.filter(is_active=True).prefetch_related('machine_types')
     
-    if category_id:
-        designs = designs.filter(category_id=category_id)
+    if category_ids:
+        designs = designs.filter(category_id__in=category_ids)
+
     
-    if machine_type and machine_type != 'both':
-        designs = designs.filter(machine_type__in=[machine_type, 'both'])
+    if machine_types:
+        designs = designs.filter(machine_types__slug__in=machine_types).distinct()
+    
     
     if search_query:
         designs = designs.filter(
@@ -183,7 +204,11 @@ def design_list(request):
         'designs': designs_with_price,
         'categories': categories,
         'paginator': paginator,
+        'machine_types': MachineType.objects.all(),  # если ещё не передаёшь
+        'selected_categories': category_ids,
+        'selected_machine_types': machine_types,  # 👈 ВАЖНО
     }
+
     return render(request, 'designs/all_items-ru.html', context)
 
 def item_info(request, design_id):
@@ -213,6 +238,12 @@ def item_info(request, design_id):
         'is_favorite': is_favorite,
         'price_data': price_data,
         'similar_designs': similar_designs,  # добавили переменную
+        # 'designs': designs_with_price,
+        # 'categories': categories,
+        # 'paginator': paginator,
+        # 'machine_types': MachineType.objects.all(),  # если ещё не передаёшь
+        # 'selected_categories': category_ids,
+        # 'selected_machine_types': machine_types,  # 👈 ВАЖНО
     }
     return render(request, 'designs/item_info.html', context)
 

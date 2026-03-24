@@ -65,7 +65,16 @@
                                     <p class="text-muted">Категория: {{ design.category.name }}</p>
                                     
                                     <div class="mb-4">
-                                        <h3 class="text-primary">{{ design.price }}</h3>
+                                        {% comment %} <h3 class="text-primary">{{ design.price }}</h3> {% endcomment %}
+                                        <div class="mb-4">
+                                            <h3 class="text-primary">
+                                                {% if price_data.final_price == 0 %}
+                                                    <span class="badge bg-success fs-5">🎁 Free</span>
+                                                {% else %}
+                                                    {{ price_data.final_price }} {{ price_data.currency }}
+                                                {% endif %}
+                                            </h3>
+                                        </div>
                                     </div>
 
                                     <!-- Рейтинг и статистика -->
@@ -159,7 +168,14 @@
                                                 <div class="info-item">
                                                     <strong><i class="fas fa-robot"></i> Машины:</strong>
                                                     <br>
-                                                    <span class="badge bg-secondary mt-1">{{ design.get_machine_type_display }}</span>
+                                                    {% comment %} <span class="badge bg-secondary mt-1">{{ design.get_machine_type_display }}</span> {% endcomment %}
+                                                    <span>
+                                                        {% for mt in design.machine_types.all %}
+                                                            {{ mt.name }}{% if not forloop.last %}, {% endif %}
+                                                        {% empty %}
+                                                            Не указано
+                                                        {% endfor %}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="col-6">
@@ -176,50 +192,33 @@
                                         <h5>Описание</h5>
                                         <p class="card-text">{{ design.description|linebreaks }}</p>
                                     </div>
-                                    
-                                    <div class="action-buttons">
+                                    {% comment %} <div class="action-buttons">
                                         {% if user.is_authenticated %}
-                                            {% comment %} {% if purchased %}
-                                                <button class="btn btn-success btn-lg w-100" disabled>
-                                                    <i class="fas fa-check"></i> Уже куплено
-                                                </button>
-                                                <div class="text-center mt-2">
-                                                    <p>Так же можете:</p>
-                                                    <a href="{% url 'my_designs' %}" class="btn btn-outline-primary">
-                                                        <i class="fas fa-download"></i> Скачать в личном кабинете
-                                                    </a>
-                                                </div>
-                                            {% else %}
-                                                {% if price_data.discount_percent > 0 %}
-                                                    <div class="text-center mb-2">
-                                                        <span class="text-muted text-decoration-line-through">${{ price_data.base_price }}</span>
-                                                        <span class="text-danger fw-bold">${{ price_data.final_price }}</span>
-                                                        <span class="badge bg-success">-{{ price_data.discount_percent }}%</span>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="text-center mb-2">
-                                                        <span class="fw-bold">${{ price_data.final_price }}</span>
+                                            {% if purchased or price_data.final_price == 0 %}
+                                                {% if purchased %}
+                                                    <button class="btn btn-success btn-lg w-100" disabled>
+                                                        <i class="fas fa-check"></i> Уже куплено
+                                                    </button>
+                                                    <div class="text-center mt-2">
+                                                        <p>Так же можете:</p>
+                                                        <a href="{% url 'my_designs' %}" class="btn btn-outline-primary">
+                                                            <i class="fas fa-download"></i> В "мои дизайны"
+                                                        </a>
                                                     </div>
                                                 {% endif %}
-                                                <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
-                                                    <i class="fas fa-shopping-cart"></i> Купить
-                                                </a>
-                                            {% endif %} {% endcomment %}
-                                            {% if purchased %}
-                                                <button class="btn btn-success btn-lg w-100" disabled>
-                                                    <i class="fas fa-check"></i> Уже куплено
-                                                </button>
-                                                <div class="text-center mt-2">
-                                                    <p>Так же можете:</p>
-                                                    <a href="{% url 'my_designs' %}" class="btn btn-outline-primary">
-                                                        <i class="fas fa-download"></i> Скачать в "мои дизайны"
+                                                {% if price_data.final_price == 0 %}
+                                                    <a href="{% url 'download_design' design.id %}" class="btn btn-success btn-lg w-100">
+                                                        <i class="fas fa-download"></i> Скачать бесплатно
                                                     </a>
-                                                </div>
+                                                {% endif %}
                                             {% else %}
                                                 <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
-                                                    <i class="fas fa-shopping-cart"></i> Купить за ${{ price_data.final_price }}
-                                                    {% if price_data.discount_percent %}
-                                                        <span class="badge bg-success">{{ price_data.discount_percent }}% скидка</span>
+                                                    <i class="fas fa-shopping-cart"></i> 
+                                                    Купить за {{ price_data.final_price }} {{ price_data.currency }}
+                                                    {% if price_data.discount_ends_in %}
+                                                        <div class="discount-timer">
+                                                            Осталось: {{ price_data.discount_ends_in }}
+                                                        </div>
                                                     {% endif %}
                                                 </a>
                                                 <div class="discount">
@@ -230,10 +229,50 @@
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
-
                                         {% else %}
                                             <div class="alert alert-warning">
-                                                <p>Для покупки дизайна необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a></p>
+                                                <p>Для скачивания необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a></p>
+                                            </div>
+                                        {% endif %}
+                                    </div> {% endcomment %}
+                                    <div class="action-buttons">
+                                        {% if user.is_authenticated %}
+                                            {% if purchased %}
+                                                <button class="btn btn-success btn-lg w-100" disabled>
+                                                    <i class="fas fa-check"></i> Уже куплено
+                                                </button>
+                                                <div class="text-center mt-2">
+                                                    <p>Так же можете:</p>
+                                                    <a href="{% url 'my_designs' %}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-list"></i> В "мои дизайны"
+                                                    </a>
+                                                </div>
+                                            {% elif price_data.final_price == 0 %}
+                                                {# Бесплатно — кнопка покупки не нужна, скачивание внизу #}
+                                                <div class="alert alert-success">
+                                                    <i class="fas fa-gift"></i> Этот дизайн бесплатный — скачайте его ниже!
+                                                </div>
+                                            {% else %}
+                                                <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                    Купить за {{ price_data.final_price }} {{ price_data.currency }}
+                                                    {% if price_data.discount_ends_in %}
+                                                        <div class="discount-timer">
+                                                            Осталось: {{ price_data.discount_ends_in }}
+                                                        </div>
+                                                    {% endif %}
+                                                </a>
+                                                <div class="discount">
+                                                    {% if price_data.discount_ends_in %}
+                                                        <p class="mt-2 text-muted small">
+                                                            Скидка действует ещё: {{ price_data.discount_ends_in }}
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                <p>Для скачивания необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a></p>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -259,13 +298,42 @@
                                         </li>
                                     </ul>
                                     <!-- Кнопка скачивания в технической информации -->
-                                    {% if purchased %}
+                                    <!-- variant 1 -->
+                                    {% comment %} {% if purchased %}
                                     <div class="mt-3">
                                         <a href="{{ design.design_file.url }}" class="btn btn-success btn-lg w-100" download="{{ design.title }}.{{ design.get_file_extension|lower }}">
                                             <i class="fas fa-download"></i> Скачать {{ design.get_file_extension }}
                                         </a>
                                     </div>
+                                    {% endif %} {% endcomment %}
+                                    <!-- variant 2 -->
+                                    {% comment %} {% if purchased or price_data.final_price == 0 %}
+                                    <div class="mt-3">
+                                        <a href="{% url 'download_design' design.id %}" class="btn btn-success btn-lg w-100">
+                                            <i class="fas fa-download"></i> Скачать {{ design.get_file_extension }}
+                                        </a>
+                                    </div> 
+                                    {% endif %}{% endcomment %}
+                                    <!-- variant 3
+                                        Логика простая — объединяем в одну кнопку:
+
+                                            если цена = 0 → "Скачать бесплатно"
+                                            если куплено → "Скачать JEF+" (или любое другое расширение)
+                                            если не куплено и не бесплатно → кнопка скачивания не показывается вообще
+                                    -->
+                                    {% if purchased or price_data.final_price == 0 %}
+                                    <div class="mt-3">
+                                        <a href="{% url 'download_design' design.id %}" class="btn btn-success btn-lg w-100">
+                                            <i class="fas fa-download"></i>
+                                            {% if price_data.final_price == 0 %}
+                                                Скачать бесплатно
+                                            {% else %}
+                                                Скачать {{ design.get_file_extension }}
+                                            {% endif %}
+                                        </a>
+                                    </div>
                                     {% endif %}
+                                    {% comment %} добавить комментарии чтобы пользователи могли оставить отзывы {% endcomment %}
                                 </div>
                             </div>
                         </div>
@@ -287,7 +355,7 @@
                         <img src="{{ similar.image_preview.url }}" class="card-img-top" alt="{{ similar.title }}" style="height: 150px; object-fit: cover;">
                         <div class="card-body">
                             <h6 class="card-title">{{ similar.title|truncatewords:4 }}</h6>
-                            <p class="card-text"><small class="text-muted">${{ similar.price }}</small></p>
+                            <p class="card-text"><small class="text-muted">{{ similar.price }}</small></p>
                             <a href="{% url 'item_info' similar.id %}" class="btn btn-sm btn-outline-primary w-100">Подробнее</a>
                         </div>
                     </div>

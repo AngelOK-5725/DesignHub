@@ -86,5 +86,3 @@ http://127.0.0.1:8000
 
 Контакты
 Автор: @AngelOK-5725
-✉️ Связь: по запросу через GitHub Issues
-Telegram: @Tamila5725

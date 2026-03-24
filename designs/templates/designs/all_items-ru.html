@@ -2,7 +2,7 @@
 {% block title %}
 all items-ru
 {% endblock title %}
-
+{% comment %} страница 404 не работает {% endcomment %} todo: сделать страницу 404 и 500, а также 403 и 400
 
 {% block content %}
 <div class="container-fluid">
@@ -16,23 +16,52 @@ all items-ru
                             <input type="text" name="search" class="form-control" placeholder="Поиск дизайнов..." value="{{ request.GET.search }}">
                         </div>
                         <div class="col-md-3">
-                            <select name="category" class="form-select">
-                                <option value="">Все категории</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>
-                                        {{ category.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                            <div class="dropdown">
+                                <button class="form-select text-start" type="button" onclick="toggleCategoryDropdown()">
+                                    {% if selected_categories %}
+                                        Выбрано: {{ selected_categories|length }}
+                                    {% else %}
+                                        Все категории
+                                    {% endif %}
+                                </button>
+                                <div id="categoryDropdown" class="dropdown-menu p-3"
+                                    style="display: none; position: absolute; width: 100%;">
+                                    {% for category in categories %}
+                                    <div>
+                                        <input type="checkbox" name="category"
+                                            value="{{ category.id }}" id="cat_{{ category.id }}"
+                                            {% if category.id|stringformat:"i" in selected_categories %}checked{% endif %}>
+                                        <label for="cat_{{ category.id }}" class="form-label">{{ category.name }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
+
                         <div class="col-md-3">
-                            <select name="machine_type" class="form-select">
-                                <option value="">Все машины</option>
-                                <option value="janome" {% if request.GET.machine_type == 'janome' %}selected{% endif %}>Janome</option>
-                                <option value="brother" {% if request.GET.machine_type == 'brother' %}selected{% endif %}>Brother</option>
-                                {% comment %} <option value="both" {% if request.GET.machine_type == 'both' %}selected{% endif %}>Все машины</option> {% endcomment %}
-                            </select>
+                            <div class="dropdown" style="position: relative;">
+                                <div class="form-select text-start" onclick="toggleMachineDropdown()" style="cursor: pointer;">
+                                    {% if selected_machine_types %}
+                                        Выбрано: {{ selected_machine_types|length }}
+                                    {% else %}
+                                        Все машины
+                                    {% endif %}
+                                </div>
+                                <div id="machineDropdown" class="dropdown-menu p-3" 
+                                    style="display: none; position: absolute; width: 100%;">
+                                    {% for mt in machine_types %}
+                                    <div>
+                                        <input type="checkbox" name="machine_type" 
+                                            value="{{ mt.slug }}" id="mt_{{ mt.slug }}"
+                                            {% if mt.slug in selected_machine_types %}checked{% endif %}>
+                                        <label for="mt_{{ mt.slug }}" class="form-label">{{ mt.name }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
+
+                        
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-primary w-100">Применить</button>
                         </div>
@@ -50,10 +79,30 @@ all items-ru
             <div class="card h-100 design-card">
                 <div class="design-image-container">
                     <img src="{{ design.image_preview.url }}" class="card-img-top design-image" alt="{{ design.title }}">
-                    <div class="design-price-badge">
-                        ${{ price_data.final_price }}
-                        {% if price_data.discount_percent %}
+                    {% comment %} <div class="design-price-badge"> {% endcomment %}
+                        {% comment %}  было {{ design.price.currency }}{{ price_data.final_price }} {% endcomment %}
+                        {% comment %} {{ price_data.currency }} {{ price_data.final_price }} {% endcomment %}
+
+                        {% comment %} было {% if price_data.discount_percent %}
                             <span class="badge bg-success">{{ price_data.discount_percent }}% скидка</span>
+                        {% endif %} {% endcomment %}
+                        {% comment %} {% if price_data.discount_ends_in %} {% endcomment %}
+                            {% comment %} <div class="discount-timer"> {% endcomment %}
+                                {% comment %} Осталось: {{ price_data.discount_ends_in }} {% endcomment %}
+                            {% comment %} </div> {% endcomment %}
+                        {% comment %} {% endif %} {% endcomment %}
+                    {% comment %} </div> {% endcomment %}
+                    <div class="design-price-badge">
+                        {% if price_data.final_price == 0 %}
+                            Free
+                        {% else %}
+                            {{ price_data.currency }} {{ price_data.final_price }}
+                        {% endif %}
+
+                        {% if price_data.discount_ends_in %}
+                            <div class="discount-timer">
+                                Осталось: {{ price_data.discount_ends_in }}
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -65,7 +114,14 @@ all items-ru
                         <div class="row small text-muted">
                             <div class="col-6">
                                 <i class="fas fa-robot"></i> 
-                                {{ design.get_machine_type_display }}
+                                <span>
+                                    {% for mt in design.machine_types.all %}
+                                        {{ mt.name }}{% if not forloop.last %}, {% endif %}
+                                    {% empty %}
+                                        Не указано
+                                    {% endfor %}
+                                </span>
+
                             </div>
                             <div class="col-6 text-end">
                                 <i class="fas fa-ruler"></i>
@@ -176,7 +232,8 @@ all items-ru
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(255,255,255,0.9);
+    {% comment %} background: rgba(255,255,255,0.9); {% endcomment %}
+    background: linear-gradient(45deg, #f4f5b40d, #0000001a);
     padding: 5px 10px;
     border-radius: 15px;
     font-weight: bold;
@@ -189,4 +246,16 @@ all items-ru
     padding-top: 10px;
 }
 </style>
+<script>
+function toggleCategoryDropdown() {
+    const el = document.getElementById("categoryDropdown");
+    el.style.display = el.style.display === "none" ? "block" : "none";
+}
+
+function toggleMachineDropdown() {
+    const el = document.getElementById("machineDropdown");
+    el.style.display = el.style.display === "none" ? "block" : "none";
+}
+</script>
+
 {% endblock %}
