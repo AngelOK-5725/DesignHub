@@ -11,6 +11,8 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('profile/favorites/', views.favorite_designs, name='favorite_designs'),
+    path('terms/', views.terms, name='terms'),
+    path('privacy/', views.privacy, name='privacy'),
 
 
     path('password-reset/', auth_views.PasswordResetView.as_view(), 

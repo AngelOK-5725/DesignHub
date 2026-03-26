@@ -26,6 +26,14 @@
                     </div>
                     {% endfor %}
                     
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms" required>
+                        <label class="form-check-label" for="agree_terms">
+                            Я принимаю <a href="{% url 'terms' %}" target="_blank">пользовательское соглашение</a> и 
+                            <a href="{% url 'privacy' %}" target="_blank">политику конфиденциальности</a>
+                        </label>
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
                 </form>
                 

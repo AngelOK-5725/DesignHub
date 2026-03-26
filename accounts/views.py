@@ -65,6 +65,11 @@ def profile(request):
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
+
+        # 👉 ВОТ СЮДА вставляем проверку
+        if not request.POST.get('agree_terms'):
+            form.add_error(None, "Вы должны принять условия")
+
         if form.is_valid():
             user = form.save()
             messages.success(request, 'Регистрация прошла успешно. Вы вошли в систему.')
@@ -76,6 +81,13 @@ def register(request):
         form = CustomUserCreationForm()
     
     return render(request, 'accounts/register.html', {'form': form})
+
+def terms(request):
+    return render(request, 'accounts/terms.html')
+
+def privacy(request):
+    return render(request, 'accounts/privacy.html')
+
 
 def user_login(request):
     if request.method == 'POST':
