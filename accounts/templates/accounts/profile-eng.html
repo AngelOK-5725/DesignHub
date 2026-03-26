@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% comment %} profile-eng.html {% endcomment %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <!-- HEADER -->
+    <section class="profile-header">
+        <div class="profile-header-left">
+            <img src="{% static 'img/avatar-placeholder.png' %}" class="profile-avatar">
+            <div>
+                <h1>{{ user.username }}</h1>
+                <p>{{ user.email }}</p>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="#" class="btn-outline">Edit Profile</a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="btn-danger">Logout</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="profile-stats">
+        <a href="{% url 'favorite_designs' %}" class="stat-link">
+            <div class="stat-card">
+                <div class="stat-title">♥️<span> Favorite</span></div>
+                <strong>{{ favorites_count }}</strong>
+            </div>
+        </a>
+        <div class="stat-card">
+            <div class="stat-title">💸<span>Last Purchase</span></div>
+            <strong>{{ user.profile.last_purchase_date|default:"—" }}</strong>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">🏢<span>Organization</span></div>
+            <strong>{{ user.profile.organization|default:"—" }}</strong>
+        </div>
+    </section>
+
+    <!-- INFO -->
+    <section class="profile-section">
+        <h2>Information</h2>
+
+        <div class="info-list">
+            <div><span>Country</span><p>{{ user.profile.country|default:"Not specified" }}</p></div>
+            <div><span>City</span><p>{{ user.profile.city|default:"Not specified" }}</p></div>
+        </div>
+    </section>
+
+    <!-- FAVORITES -->
+    {% comment %} <section class="profile-section">
+        <h3>Favorite Designs</h3>
+
+        {% if favorites %}
+            <div class="row">
+                {% for fav in favorites %}
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <img src="{{ fav.design.image_preview.url }}"
+                                class="card-img-top"
+                                alt="{{ fav.design.title }}">
+
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {{ fav.design.title }}
+                                </h5>
+
+                                <a href="{% url 'item_info' fav.design.id %}"
+                                    class="btn btn-outline-primary w-100">
+                                    Открыть
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">У вас пока нет избранных дизайнов</p>
+        {% endif %} {% endcomment %}
+    </section>
+
+    <!-- PURCHASES -->
+    <section class="profile-section">
+        <h2>My Purchases</h2>
+
+        {% if purchases %}
+        <div class="purchases-list">
+
+            {% for purchase in purchases %}
+            <div class="purchase-card">
+                <div class="purchase-left">
+                    <img src="{{ purchase.design.preview.url }}">
+                </div>
+
+                <div class="purchase-center">
+                    <h4>{{ purchase.design.name }}</h4>
+                    <p class="date">
+                        {{ purchase.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                    <p class="txn">
+                        Receipt № {{ purchase.transaction_id }}
+                    </p>
+                </div>
+
+                <div class="purchase-right">
+                <span class="price">{{ purchase.amount }} {{ purchase.design.price.currency }}</span>
+                    <a href="{% url 'item_info' purchase.design.id %}" class="btn-outline">
+                        Open
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+        {% else %}
+            <p class="empty">No purchases yet</p>
+        {% endif %}
+    </section>
+
+
+</div>
+
+{% endblock %}

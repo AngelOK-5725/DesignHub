@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% comment %} all_items-ru.html {% endcomment %}
 {% block title %}
 all items-ru
 {% endblock title %}
-{% comment %} страница 404 не работает {% endcomment %} todo: сделать страницу 404 и 500, а также 403 и 400
+{% comment %} страница 404 не работает todo: сделать страницу 404 и 500, а также 403 и 400{% endcomment %} 
 
 {% block content %}
 <div class="container-fluid">
@@ -92,11 +93,11 @@ all items-ru
                             {% comment %} </div> {% endcomment %}
                         {% comment %} {% endif %} {% endcomment %}
                     {% comment %} </div> {% endcomment %}
-                    <div class="design-price-badge">
+                    <div class="design-price-badge {% if price_data.final_price == 0 %}free-badge{% endif %}">
                         {% if price_data.final_price == 0 %}
-                            Free
+                            Бесплатно
                         {% else %}
-                            {{ price_data.currency }} {{ price_data.final_price }}
+                            {{ price_data.final_price }} {{ price_data.currency }}
                         {% endif %}
 
                         {% if price_data.discount_ends_in %}
@@ -105,6 +106,7 @@ all items-ru
                             </div>
                         {% endif %}
                     </div>
+
                 </div>
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ design.title }}</h5>
@@ -240,6 +242,13 @@ all items-ru
     color: #333;
     backdrop-filter: blur(10px);
 }
+.free-badge {
+    background: linear-gradient(135deg, #00c853, #b2ff59);
+    color: #003300;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0, 200, 83, 0.4);
+}
+
 
 .design-specs {
     border-top: 1px solid #eee;

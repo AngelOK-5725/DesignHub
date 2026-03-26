@@ -1,0 +1,604 @@
+{% extends 'base.html' %}
+{% comment %} item_info-ru.html {% endcomment %}
+{% load static %}
+{% block title %}
+{{ design.title }}
+{% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <!-- Карточка с навигацией в шапке -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button onclick="window.history.back()" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </button>
+                        <h5 class="mb-0">Информация о дизайне</h5>
+                        <a href="{% url 'design_list' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-th"></i> Все дизайны
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="card">
+                                <img src="{{ design.image_preview.url }}" class="card-img-top" alt="{{ design.title }}" style="max-height: 500px; object-fit: contain;">
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <div class="col-sm-12 col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="card-title h2">{{ design.title }}</h1>
+                                    <div class="design-card">
+                                        <div class="design-like">
+                                            <button class="like-btn {% if is_favorite %}active{% endif %}"
+                                                    data-id="{{ design.id }}"
+                                                    data-is-favorite="{{ is_favorite|yesno:'true,false' }}"
+                                                    aria-pressed="{{ is_favorite|yesno:'true,false' }}"
+                                                    title="{% if is_favorite %}Убрать из избранного{% else %}Добавить в избранное{% endif %}">
+                                                <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart heart-icon" aria-hidden="true"></i>
+                                            </button>
+                                            <span class="favorites-count">{{ design.favorites.count }}</span>
+                                        </div>
+
+                                        {% comment %} <button
+                                            id="favorite-btn"
+                                            data-design-id="{{ design.id }}"
+                                            class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                                        >
+                                            <span id="favorite-icon">
+                                                {% if is_favorite %}❤️{% else %}🤍{% endif %}
+                                            </span>
+                                        </button> 
+
+                                        <span id="favorites-count">{{ design.favorites.count }}</span>{% endcomment %}
+
+                                        
+                                    </div>
+                                    <p class="text-muted">Категория: {{ design.category.name }}</p>
+                                    
+                                    <div class="mb-4">
+                                        {% comment %} <h3 class="text-primary">{{ design.price }}</h3> {% endcomment %}
+                                        <div class="mb-4">
+                                            <h3 class="text-primary">
+                                                {% if price_data.final_price == 0 %}
+                                                    <span class="badge bg-success fs-5">🎁 Free</span>
+                                                {% else %}
+                                                    {{ price_data.final_price }} {{ price_data.currency }}
+                                                {% endif %}
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Рейтинг и статистика -->
+                                    <div class="rating-stats mb-4">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center">
+                                                    <!-- Звезды рейтинга -->
+                                                    <div class="rating-stars me-3">
+                                                        {% with stats=design.get_rating_stats %}
+                                                        <div class="star-rating" data-design-id="{{ design.id }}">
+                                                            {% for i in "12345" %}
+                                                                {% with i=i|add:0 %}
+                                                                <span class="star {% if i <= stats.average %}filled{% endif %}" 
+                                                                        data-rating="{{ i }}">
+                                                                    <i class="fas fa-star"></i>
+                                                                </span>
+                                                                {% endwith %}
+                                                            {% endfor %}
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            {{ stats.average|default:0 }} ({{ stats.count }} оценок)
+                                                        </small>
+                                                        {% endwith %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="purchase-stats text-end">
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-shopping-cart"></i>
+                                                        Куплено: {{ design.get_purchase_count }} раз
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Форма оценки для авторизованных пользователей -->
+                                        {% comment %} {% if user.is_authenticated and not purchased %}
+                                        <div class="user-rating mt-3">
+                                            <form class="rating-form" method="post" action="{% url 'rate_design' design.id %}">
+                                                {% csrf_token %}
+                                                <small class="text-muted">Оцените этот дизайн:</small>
+                                                <div class="rating-buttons mt-1">
+                                                    {% for i in "12345" %}
+                                                        {% with i=i|add:0 %}
+                                                        <button type="submit" name="rating" value="{{ i }}" 
+                                                                class="btn btn-sm btn-outline-warning rating-btn {% if design.get_user_rating.user == i %}active{% endif %}"
+                                                                title="Оценить {{ i }} звезд">
+                                                            <i class="fas fa-star"></i> {{ i }}
+                                                        </button>
+                                                        {% endwith %}
+                                                    {% endfor %}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        {% endif %} {% endcomment %}
+
+                                        <!-- Информация о стежках и пяльцах -->
+                                        <div class="design-specs mb-4">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="info-item">
+                                                        <strong><i class="fas fa-shoe-prints"></i> Количество стежков:</strong>
+                                                        <br>
+                                                        <span class="badge bg-primary mt-1">{{ design.get_stitch_count_display }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="info-item">
+                                                        <strong><i class="fas fa-vector-square"></i> Доступные пяльца:</strong>
+                                                        <br>
+                                                        <div class="mt-1">
+                                                            {% for hoop in design.compatible_hoops.all %}
+                                                            <span class="badge bg-info me-1" title="{{ hoop.compatible_machines }}">
+                                                                {{ hoop.code }}
+                                                            </span>
+                                                            {% empty %}
+                                                            <span class="text-muted">Не указано</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="design-info mb-4">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="info-item">
+                                                    <strong><i class="fas fa-robot"></i> Машины:</strong>
+                                                    <br>
+                                                    {% comment %} <span class="badge bg-secondary mt-1">{{ design.get_machine_type_display }}</span> {% endcomment %}
+                                                    <span>
+                                                        {% for mt in design.machine_types.all %}
+                                                            {{ mt.name }}{% if not forloop.last %}, {% endif %}
+                                                        {% empty %}
+                                                            Не указано
+                                                        {% endfor %}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="info-item">
+                                                    <strong><i class="fas fa-ruler"></i> Размер:</strong>
+                                                    <br>
+                                                    <span class="badge bg-info mt-1">{{ design.design_size }} mm</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="description mb-4">
+                                        <h5>Описание</h5>
+                                        <p class="card-text">{{ design.description|linebreaks }}</p>
+                                    </div>
+                                    {% comment %} <div class="action-buttons">
+                                        {% if user.is_authenticated %}
+                                            {% if purchased or price_data.final_price == 0 %}
+                                                {% if purchased %}
+                                                    <button class="btn btn-success btn-lg w-100" disabled>
+                                                        <i class="fas fa-check"></i> Уже куплено
+                                                    </button>
+                                                    <div class="text-center mt-2">
+                                                        <p>Так же можете:</p>
+                                                        <a href="{% url 'my_designs' %}" class="btn btn-outline-primary">
+                                                            <i class="fas fa-download"></i> В "мои дизайны"
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                                {% if price_data.final_price == 0 %}
+                                                    <a href="{% url 'download_design' design.id %}" class="btn btn-success btn-lg w-100">
+                                                        <i class="fas fa-download"></i> Скачать бесплатно
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
+                                                    <i class="fas fa-shopping-cart"></i> 
+                                                    Купить за {{ price_data.final_price }} {{ price_data.currency }}
+                                                    {% if price_data.discount_ends_in %}
+                                                        <div class="discount-timer">
+                                                            Осталось: {{ price_data.discount_ends_in }}
+                                                        </div>
+                                                    {% endif %}
+                                                </a>
+                                                <div class="discount">
+                                                    {% if price_data.discount_ends_in %}
+                                                        <p class="mt-2 text-muted small">
+                                                            Скидка действует ещё: {{ price_data.discount_ends_in }}
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                <p>Для скачивания необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a></p>
+                                            </div>
+                                        {% endif %}
+                                    </div> {% endcomment %}
+                                    <div class="action-buttons">
+                                        {% if user.is_authenticated %}
+                                            {% if purchased %}
+                                                <button class="btn btn-success btn-lg w-100" disabled>
+                                                    <i class="fas fa-check"></i> Готово
+                                                </button>
+                                                <div class="text-center mt-2">
+                                                    <p>Так же можете:</p>
+                                                    <a href="{% url 'my_designs' %}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-list"></i> В "мои дизайны"
+                                                    </a>
+                                                </div>
+                                            {% elif price_data.final_price == 0 %}
+                                                <div class="alert alert-success">
+                                                    <i class="fas fa-gift"></i> Этот дизайн бесплатный — скачайте его ниже!
+                                                </div>
+                                                <a href="{% url 'add_free_to_my_designs' design.id %}" class="btn btn-outline-success w-100">
+                                                    <i class="fas fa-plus"></i> Добавить в "Мои дизайны"
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                    Купить за {{ price_data.final_price }} {{ price_data.currency }}
+                                                    {% if price_data.discount_ends_in %}
+                                                        <div class="discount-timer">
+                                                            Осталось: {{ price_data.discount_ends_in }}
+                                                        </div>
+                                                    {% endif %}
+                                                </a>
+                                                <div class="discount">
+                                                    {% if price_data.discount_ends_in %}
+                                                        <p class="mt-2 text-muted small">
+                                                            Скидка действует ещё: {{ price_data.discount_ends_in }}
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                <p>Для скачивания необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a></p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Дополнительная информация -->
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Техническая информация</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Формат файла:</span>
+                                            <span class="text-muted">{{ design.get_file_extension }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Дата добавления:</span>
+                                            <span class="text-muted">{{ design.created_at|date:"d.m.Y" }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Категория:</span>
+                                            <span class="text-muted">{{ design.category.name }}</span>
+                                        </li>
+                                    </ul>
+                                    <!-- Кнопка скачивания в технической информации -->
+                                    <!-- variant 1 -->
+                                    {% comment %} {% if purchased %}
+                                    <div class="mt-3">
+                                        <a href="{{ design.design_file.url }}" class="btn btn-success btn-lg w-100" download="{{ design.title }}.{{ design.get_file_extension|lower }}">
+                                            <i class="fas fa-download"></i> Скачать {{ design.get_file_extension }}
+                                        </a>
+                                    </div>
+                                    {% endif %} {% endcomment %}
+                                    <!-- variant 2 -->
+                                    {% comment %} {% if purchased or price_data.final_price == 0 %}
+                                    <div class="mt-3">
+                                        <a href="{% url 'download_design' design.id %}" class="btn btn-success btn-lg w-100">
+                                            <i class="fas fa-download"></i> Скачать {{ design.get_file_extension }}
+                                        </a>
+                                    </div> 
+                                    {% endif %}{% endcomment %}
+                                    <!-- variant 3
+                                        Логика простая — объединяем в одну кнопку:
+
+                                            если цена = 0 → "Скачать бесплатно"
+                                            если куплено → "Скачать JEF+" (или любое другое расширение)
+                                            если не куплено и не бесплатно → кнопка скачивания не показывается вообще
+                                    -->
+                                    {% if purchased or price_data.final_price == 0 %}
+                                    <div class="mt-3">
+                                        <a href="{% url 'download_design' design.id %}" class="btn btn-success btn-lg w-100">
+                                            <i class="fas fa-download"></i>
+                                            {% if price_data.final_price == 0 %}
+                                                Скачать бесплатно
+                                            {% else %}
+                                                Скачать {{ design.get_file_extension }}
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                    {% comment %} добавить комментарии чтобы пользователи могли оставить отзывы {% endcomment %}
+                                    <!-- Комментарии -->
+                                    <div class="row mt-5">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h4 class="mb-4">
+                                                        <i class="fas fa-comments"></i> Комментарии
+                                                        <span class="badge bg-secondary">{{ comments.count }}</span>
+                                                    </h4>
+
+                                                    {% if user.is_authenticated %}
+                                                    <form method="post" action="{% url 'add_comment' design.id %}" enctype="multipart/form-data" class="mb-4">
+                                                        {% csrf_token %}
+                                                        <div class="mb-3">
+                                                            <textarea name="text" class="form-control" rows="3"
+                                                                placeholder="Напишите комментарий или задайте вопрос..."></textarea>
+                                                        </div>
+                                                        <div class="row mb-3">
+                                                            <div class="col-md-6">
+                                                                <label class="form-label text-muted small">
+                                                                    <i class="fas fa-image"></i> Прикрепить фото
+                                                                </label>
+                                                                <input type="file" name="image" class="form-control form-control-sm" accept="image/*">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label text-muted small">
+                                                                    <i class="fas fa-video"></i> Прикрепить видео
+                                                                </label>
+                                                                <input type="file" name="video" class="form-control form-control-sm" accept="video/*">
+                                                            </div>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="fas fa-paper-plane"></i> Отправить
+                                                        </button>
+                                                    </form>
+                                                    {% else %}
+                                                    <div class="alert alert-warning mb-4">
+                                                        <a href="{% url 'login' %}">Войдите</a> или
+                                                        <a href="{% url 'register' %}">зарегистрируйтесь</a>,
+                                                        чтобы оставить комментарий.
+                                                    </div>
+                                                    {% endif %}
+
+                                                    {% for comment in comments %}
+                                                    <div class="comment-item border-bottom pb-3 mb-3">
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <strong>{{ comment.user.username }}</strong>
+                                                            {% if comment.is_verified_purchase %}
+                                                            <span class="badge bg-success ms-2" title="Подтверждённая покупка">
+                                                                <i class="fas fa-check-circle"></i> Купил
+                                                            </span>
+                                                            {% endif %}
+                                                            <span class="text-muted small ms-auto">
+                                                                {{ comment.created_at|date:"d.m.Y H:i" }}
+                                                            </span>
+                                                        </div>
+
+                                                        {% if comment.text %}
+                                                        <p class="mb-2">{{ comment.text|linebreaks }}</p>
+                                                        {% endif %}
+
+                                                        {% if comment.image %}
+                                                        <div class="mb-2">
+                                                            <img src="{{ comment.image.url }}" class="img-fluid rounded"
+                                                                style="max-height: 300px; cursor: pointer;"
+                                                                onclick="this.style.maxHeight = this.style.maxHeight === 'none' ? '300px' : 'none'">
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if comment.video %}
+                                                        <div class="mb-2">
+                                                            <video controls class="w-100 rounded" style="max-height: 400px;">
+                                                                <source src="{{ comment.video.url }}">
+                                                                Ваш браузер не поддерживает видео.
+                                                            </video>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% empty %}
+                                                    <div class="text-center text-muted py-4">
+                                                        <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                                                        <p>Комментариев пока нет. Будьте первым!</p>
+                                                    </div>
+                                                    {% endfor %}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Похожие дизайны -->
+    {% if similar_designs %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Похожие дизайны</h3>
+            <div class="row">
+                {% for similar in similar_designs %}
+                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card h-100">
+                        <img src="{{ similar.image_preview.url }}" class="card-img-top" alt="{{ similar.title }}" style="height: 150px; object-fit: cover;">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ similar.title|truncatewords:4 }}</h6>
+                            <p class="card-text"><small class="text-muted">{{ similar.price }}</small></p>
+                            <a href="{% url 'item_info' similar.id %}" class="btn btn-sm btn-outline-primary w-100">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+                {% if similar_designs %}
+                    {% comment %} <p>Найдено {{ similar_designs.count }} похожих дизайнов</p> {% endcomment %}
+                {% else %}
+                    <p>Похожих дизайнов нет</p>
+                {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.design-card {
+    position: relative;
+}
+
+.design-like {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+}
+
+.like-btn {
+    font-size: 28px;        /* размер сердечка */
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #bbb;            /* серый по умолчанию */
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.like-btn .heart-icon {
+    color: #bbb; /* default */
+    transition: color 0.2s ease, transform 0.2s ease;
+    font-size: 28px;
+}
+
+.like-btn:hover {
+    transform: scale(1.02);
+}
+
+.like-btn.active .heart-icon {
+    color: #e63946 !important;  /* красное, когда лайкнуто */
+    transform: scale(1.05);
+}
+
+.like-btn:active {
+    transform: scale(1.02);
+}
+
+
+.discount {
+    background-color: #cfe556;
+    border-radius: 15px;
+    margin-top: 10px;
+}
+.discount p {
+    margin: 5px;
+    font-weight: bold;
+    font-size: 25px;
+    text-align: center;
+    padding: 15px 5px;
+}
+
+.info-item {
+    margin-bottom: 15px;
+}
+
+.action-buttons .btn {
+    margin-bottom: 10px;
+}
+
+.card {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.badge {
+    font-size: 0.9em;
+}
+
+/* Стили для главной карточки */
+.card-header.bg-light {
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+    padding: 1rem 1.25rem;
+}
+
+/* Убираем лишние тени у внутренних карточек */
+.card .card {
+    box-shadow: none;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+/* Стили для рейтинга */
+.rating-stars {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.star-rating .star {
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s;
+    font-size: 1.2em;
+}
+
+.star-rating .star.filled {
+    color: #ffc107;
+}
+
+.star-rating .star.hover {
+    color: #ffc107;
+}
+
+.rating-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.rating-btn.active {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+.purchase-stats .badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.75em;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .rating-stats .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .purchase-stats {
+        text-align: left !important;
+    }
+}
+</style>
+
+<!-- Подключаем JavaScript для рейтинга -->
+<script src="{% static 'js/rating.js' %}"></script>
+<script src="{% static 'js/favorite_designs.js' %}"></script>
+{% endblock %}

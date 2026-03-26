@@ -55,7 +55,7 @@ def profile(request):
         user=request.user
     ).count()
 
-    return render(request, 'accounts/profile.html', {
+    return render(request, 'accounts/profile-ru.html', {
         'purchases': purchases,
         'favorites_count': favorites_count,
     })

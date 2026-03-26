@@ -8,7 +8,8 @@ from django.db.models import Q
 from .models import Design, Category, FavoriteDesign, MachineType
 from django.core.paginator import Paginator
 from payments.models import Purchase
-
+# добавь импорт вверху файла
+from comments.models import DesignComment
 
 from django.http import FileResponse, HttpResponse, JsonResponse
 from .forms import RatingForm
@@ -226,6 +227,20 @@ def design_list(request):
 
     return render(request, 'designs/all_items-ru.html', context)
 
+# def item_info(request, design_id):
+#     design = get_object_or_404(Design, id=design_id, is_active=True)
+
+#     purchased = False
+#     is_favorite = False
+
+#     if request.user.is_authenticated:
+#         purchased = Purchase.objects.filter(user=request.user, design=design).exists()
+#         is_favorite = FavoriteDesign.objects.filter(
+#             user=request.user,
+#             design=design
+#         ).exists()
+
+#     price_data = get_final_price(design)
 def item_info(request, design_id):
     design = get_object_or_404(Design, id=design_id, is_active=True)
 
@@ -240,6 +255,26 @@ def item_info(request, design_id):
         ).exists()
 
     price_data = get_final_price(design)
+
+    similar_designs = Design.objects.filter(
+        category=design.category,
+        is_active=True
+    ).exclude(id=design.id)[:6]
+
+    comments = DesignComment.objects.filter(       # добавили
+        design=design,
+        is_active=True
+    ).select_related('user')
+
+    context = {
+        'design': design,
+        'purchased': purchased,
+        'is_favorite': is_favorite,
+        'price_data': price_data,
+        'similar_designs': similar_designs,
+        'comments': comments,                      # добавили
+    }
+    return render(request, 'designs/item_info-ru.html', context)
 
     # --- Получаем похожие дизайны ---
     similar_designs = Design.objects.filter(
@@ -260,7 +295,7 @@ def item_info(request, design_id):
         # 'selected_categories': category_ids,
         # 'selected_machine_types': machine_types,  # 👈 ВАЖНО
     }
-    return render(request, 'designs/item_info.html', context)
+    return render(request, 'designs/item_info-ru.html', context)
 
 
 @login_required
