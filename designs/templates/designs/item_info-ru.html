@@ -261,10 +261,6 @@
                                                 <a href="{% url 'add_free_to_my_designs' design.id %}" class="btn btn-outline-success w-100">
                                                     <i class="fas fa-plus"></i> Добавить в "Мои дизайны"
                                                 </a>
-                                                <p class="text-muted small mt-2">
-                                                    Скачивая файл, вы соглашаетесь с 
-                                                    <a href="{% url 'terms' %}" target="_blank">условиями использования</a>.
-                                                </p>
 
                                             {% else %}
                                                 <a href="{% url 'create_payment' design.id %}" class="btn btn-primary btn-lg w-100">
@@ -276,6 +272,10 @@
                                                         </div>
                                                     {% endif %}
                                                 </a>
+                                                <p class="text-muted small mt-2">
+                                                    Нажимая кнопку «Купить», вы соглашаетесь с 
+                                                    <a href="{% url 'accounts:terms' %}" target="_blank">условиями использования</a>.
+                                                </p>
                                                 <div class="discount">
                                                     {% if price_data.discount_ends_in %}
                                                         <p class="mt-2 text-muted small">
@@ -284,14 +284,10 @@
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
-                                            <p class="text-muted small mt-2">
-                                                Нажимая кнопку «Купить», вы соглашаетесь с 
-                                                <a href="{% url 'accounts:terms' %}" target="_blank">условиями использования</a>.
-                                            </p>
 
                                         {% else %}
                                             <div class="alert alert-warning">
-                                                <p>Для скачивания необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a></p>
+                                                <p>Для скачивания необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'accounts:register' %}">зарегистрироваться</a></p>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -350,6 +346,10 @@
                                                 Скачать {{ design.get_file_extension }}
                                             {% endif %}
                                         </a>
+                                        <p class="text-muted small mt-2">
+                                            Скачивая файл, вы соглашаетесь с 
+                                            <a href="{% url 'accounts:terms' %}" target="_blank">условиями использования</a>.
+                                        </p>
                                     </div>
                                     {% endif %}
                                     {% comment %} добавить комментарии чтобы пользователи могли оставить отзывы {% endcomment %}
@@ -390,8 +390,8 @@
                                                     </form>
                                                     {% else %}
                                                     <div class="alert alert-warning mb-4">
-                                                        <a href="{% url 'login' %}">Войдите</a> или
-                                                        <a href="{% url 'register' %}">зарегистрируйтесь</a>,
+                                                        <a href="{% url 'accounts:login' %}">Войдите</a> или
+                                                        <a href="{% url 'accounts:register' %}">зарегистрируйтесь</a>,
                                                         чтобы оставить комментарий.
                                                     </div>
                                                     {% endif %}
