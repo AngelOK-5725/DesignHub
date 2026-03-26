@@ -27,7 +27,7 @@
                     <a class="nav-link" href="{% url 'my_designs' %}">
                         <i class="fas fa-download"></i> Мои дизайны
                     </a>
-                        <form method="post" action="{% url 'profile' %}" class="d-inline">
+                        <form method="post" action="{% url 'accounts:profile' %}" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-link nav-link" style="border: none; background: none;">
                                 <i class="fas fa-sign-out-alt"></i> Профиль ({{ user.username }})
