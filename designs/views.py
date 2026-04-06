@@ -1,4 +1,4 @@
-# embroidery_designs/designs/views.py
+# designs/views.py
 
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,10 +8,9 @@ from django.db.models import Q
 from .models import Design, Category, FavoriteDesign, MachineType
 from django.core.paginator import Paginator
 from payments.models import Purchase
-# добавь импорт вверху файла
 from comments.models import DesignComment
 
-from django.http import FileResponse, HttpResponse, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from .forms import RatingForm
 from .models import DesignRating
 

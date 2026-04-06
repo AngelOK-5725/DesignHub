@@ -25,15 +25,42 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-12 col-md-6">
-                            <div class="card">
-                                <img src="{{ design.image_preview.url }}" class="card-img-top" alt="{{ design.title }}" style="max-height: 500px; object-fit: contain;">
+
+                        <!-- КАРТИНКА -->
+                        <!-- КАРТИНКА - на десктопе слева (order-md-0), на мобилках сверху (order-0) -->
+                        <div class="col-12 col-md-6 order-0 order-md-0">
+                            <div class="gallery" id="gallery">
+                                <img id="mainImage"
+                                    src="{% if design.image_preview %}{{ design.image_preview.url }}{% endif %}"
+                                    class="main-image"
+                                    onclick="zoomImage(this)"
+                                    style="cursor: zoom-in;">
+
+
+                                <div class="thumbs mt-2 d-flex gap-2 flex-wrap">
+                                    {% if design.image_preview %}
+                                        <img src="{{ design.image_preview.url }}"
+                                            class="thumb active"
+                                            onclick="setImage(this)">
+                                    {% endif %}
+
+                                    {% for img in design.images.all %}
+                                        <img src="{{ img.image.url }}"
+                                            class="thumb"
+                                            onclick="setImage(this)">
+                                    {% empty %}
+                                        <!-- ничего не ломается -->
+                                    {% endfor %}
+                                </div>
                             </div>
+
+
                         </div>
                         
                         
-                        
-                        <div class="col-sm-12 col-md-6">
+                        <!-- ОПИСАНИЕ -->
+                        <!-- ОПИСАНИЕ - на десктопе справа (order-md-1), на мобилках снизу (order-1) -->
+                        <div class="col-12 col-md-6 order-1 order-md-1">
                             <div class="card">
                                 <div class="card-body">
                                     <h1 class="card-title h2">{{ design.title }}</h1>
@@ -483,138 +510,306 @@
 </div>
 
 <style>
-.design-card {
-    position: relative;
-}
+    #mainImage {
+        width: 100%;
+        max-width: 100%;
+        height: 420px;
+        object-fit: contain;
+        object-position: center;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        display: block;
+    }
 
-.design-like {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
-}
+    .thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
 
-.like-btn {
-    font-size: 28px;        /* размер сердечка */
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #bbb;            /* серый по умолчанию */
-    transition: transform 0.2s ease, color 0.2s ease;
-}
+    .thumb.active {
+        opacity: 1;
+        border: 2px solid #007bff;
+    }
 
-.like-btn .heart-icon {
-    color: #bbb; /* default */
-    transition: color 0.2s ease, transform 0.2s ease;
-    font-size: 28px;
-}
+    .thumb:hover {
+        transform: scale(1.05);
+    }
 
-.like-btn:hover {
-    transform: scale(1.02);
-}
+    .design-like {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 2;
+    }
 
-.like-btn.active .heart-icon {
-    color: #e63946 !important;  /* красное, когда лайкнуто */
-    transform: scale(1.05);
-}
+    .like-btn {
+        font-size: 28px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #bbb;
+        transition: transform 0.2s ease, color 0.2s ease;
+    }
 
-.like-btn:active {
-    transform: scale(1.02);
-}
+    .like-btn .heart-icon {
+        color: #bbb;
+        transition: color 0.2s ease, transform 0.2s ease;
+        font-size: 28px;
+    }
 
+    .like-btn:hover {
+        transform: scale(1.02);
+    }
 
-.discount {
-    background-color: #cfe556;
-    border-radius: 15px;
-    margin-top: 10px;
-}
-.discount p {
-    margin: 5px;
-    font-weight: bold;
-    font-size: 25px;
-    text-align: center;
-    padding: 15px 5px;
-}
+    .like-btn.active .heart-icon {
+        color: #e63946 !important;
+        transform: scale(1.05);
+    }
 
-.info-item {
-    margin-bottom: 15px;
-}
+    .like-btn:active {
+        transform: scale(1.02);
+    }
 
-.action-buttons .btn {
-    margin-bottom: 10px;
-}
-
-.card {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    border: none;
-}
-
-.badge {
-    font-size: 0.9em;
-}
-
-/* Стили для главной карточки */
-.card-header.bg-light {
-    border-bottom: 1px solid rgba(0,0,0,0.125);
-    padding: 1rem 1.25rem;
-}
-
-/* Убираем лишние тени у внутренних карточек */
-.card .card {
-    box-shadow: none;
-    border: 1px solid rgba(0,0,0,0.125);
-}
-
-/* Стили для рейтинга */
-.rating-stars {
-    display: inline-flex;
-    gap: 2px;
-}
-
-.star-rating .star {
-    cursor: pointer;
-    color: #ddd;
-    transition: color 0.2s;
-    font-size: 1.2em;
-}
-
-.star-rating .star.filled {
-    color: #ffc107;
-}
-
-.star-rating .star.hover {
-    color: #ffc107;
-}
-
-.rating-buttons {
-    display: flex;
-    gap: 5px;
-}
-
-.rating-btn.active {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #000;
-}
-
-.purchase-stats .badge {
-    font-size: 0.9em;
-    padding: 0.5em 0.75em;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    .rating-stats .row > div {
-        margin-bottom: 1rem;
+    .discount {
+        background-color: #cfe556;
+        border-radius: 15px;
+        margin-top: 10px;
     }
     
-    .purchase-stats {
-        text-align: left !important;
+    .discount p {
+        margin: 5px;
+        font-weight: bold;
+        font-size: 25px;
+        text-align: center;
+        padding: 15px 5px;
     }
-}
+
+    .info-item {
+        margin-bottom: 15px;
+    }
+
+    .action-buttons .btn {
+        margin-bottom: 10px;
+    }
+
+    .card {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+    .badge {
+        font-size: 0.9em;
+    }
+
+    .card-header.bg-light {
+        border-bottom: 1px solid rgba(0,0,0,0.125);
+        padding: 1rem 1.25rem;
+    }
+
+    .card .card {
+        box-shadow: none;
+        border: 1px solid rgba(0,0,0,0.125);
+    }
+
+    .rating-stars {
+        display: inline-flex;
+        gap: 2px;
+    }
+
+    .star-rating .star {
+        cursor: pointer;
+        color: #ddd;
+        transition: color 0.2s;
+        font-size: 1.2em;
+    }
+
+    .star-rating .star.filled {
+        color: #ffc107;
+    }
+
+    .star-rating .star.hover {
+        color: #ffc107;
+    }
+
+    .rating-buttons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .rating-btn.active {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+
+    .purchase-stats .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.75em;
+    }
+    {% comment %} @media (max-width: 768px) {
+        .similar-card .card-img-top {
+            height: 150px;
+        }
+        
+        .similar-card .card-title {
+            font-size: 0.8rem;
+        }
+        
+        .similar-designs-section h3 {
+            font-size: 1.3rem;
+        }
+    } {% endcomment %}
+
+    /* Удаляем тестовые надписи */
+    @media (max-width: 768px) {
+        body::before {
+            display: none;
+        }
+    }
+
+    @media (min-width: 769px) {
+        body::before {
+            display: none;
+        }
+    }
+
+    /* Адаптация для мобильных устройств */
+    @media (max-width: 768px) {
+        /* Уменьшаем кнопки и заголовок в карточке навигации */
+        .card-header .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .card-header h5.mb-0 {
+            font-size: 0.9rem;
+        }
+        
+        /* Отступ снизу для миниатюр */
+        .thumbs {
+            margin-bottom: 1rem;
+        }
+        
+        /* Вертикальные карточки для похожих дизайнов */
+        .similar-designs-row {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Каждая карточка на всю ширину */
+        .similar-designs-row > [class*="col-"] {
+            width: 100%;
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+        
+        /* Увеличиваем высоту картинок в похожих дизайнах для лучшего вида */
+        .card.h-100 img {
+            height: 200px !important;
+        }
+    }
+
+    /* Дополнительно: улучшаем вид карточек похожих дизайнов на мобилках */
+    @media (max-width: 576px) {
+        .card.h-100 img {
+            height: 180px !important;
+        }
+        
+        .card.h-100 .card-title {
+            font-size: 0.9rem;
+        }
+    }
+
 </style>
 
 <!-- Подключаем JavaScript для рейтинга -->
 <script src="{% static 'js/rating.js' %}"></script>
 <script src="{% static 'js/favorite_designs.js' %}"></script>
+
+<script>
+let currentIndex = 0;
+
+function getImages() {
+    return Array.from(document.querySelectorAll('.thumb'));
+}
+
+function setImageByIndex(index) {
+    const images = getImages();
+    if (images.length === 0) return;
+
+    if (index < 0) index = 0;
+    if (index >= images.length) index = images.length - 1;
+
+    currentIndex = index;
+
+    const el = images[index];
+
+    document.getElementById("mainImage").src = el.src;
+
+    images.forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function setImage(el) {
+    const images = getImages();
+    currentIndex = images.indexOf(el);
+    setImageByIndex(currentIndex);
+}
+
+function zoomImage(el) {
+    const modal = document.createElement('div');
+    modal.style = `
+        position: fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background: rgba(0,0,0,0.8);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        z-index:9999;
+    `;
+
+    const img = document.createElement('img');
+    img.src = el.src;
+    img.style = "max-width:90%; max-height:90%; border-radius:10px;";
+
+    modal.appendChild(img);
+    modal.onclick = () => modal.remove();
+
+    document.body.appendChild(modal);
+}
+
+//// 🔥 СВАЙП
+
+let startX = 0;
+let endX = 0;
+
+const gallery = document.getElementById("gallery");
+
+gallery.addEventListener("touchstart", function(e) {
+    startX = e.touches[0].clientX;
+});
+
+gallery.addEventListener("touchend", function(e) {
+    endX = e.changedTouches[0].clientX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    if (startX - endX > 50) {
+        // свайп влево → следующая
+        setImageByIndex(currentIndex + 1);
+    }
+
+    if (endX - startX > 50) {
+        // свайп вправо → предыдущая
+        setImageByIndex(currentIndex - 1);
+    }
+}
+</script>
+
+
+
 {% endblock %}

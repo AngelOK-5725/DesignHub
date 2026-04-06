@@ -1,4 +1,4 @@
-# embroidery_designs/payments/views.py
+# payments/views.py
 
 # Create your views here.
 # payments/views.py
@@ -18,6 +18,7 @@ from django.utils import timezone
 import uuid
 from .models import Payment
 
+@login_required
 def start_payment(request, design_id):
     design = get_object_or_404(Design, id=design_id)
 
@@ -57,25 +58,87 @@ def start_payment(request, design_id):
     return redirect(url)
 
 
+# @login_required
+# def create_payment(request, design_id):
+#     design = get_object_or_404(Design, id=design_id, is_active=True)
+
+#     # Проверяем, не куплен ли уже дизайн
+#     if Purchase.objects.filter(user=request.user, design=design).exists():
+#         return redirect('design_detail', design_id=design_id)
+
+#     # Получаем активную скидку
+#     now = timezone.now()
+#     active_discounts = design.discounts.filter(active=True, start_date__lte=now, end_date__gte=now)
+#     discount_percent = max((d.percent for d in active_discounts), default=0)
+    
+#     # Цена с учётом скидки
+#     amount = design.price * (1 - discount_percent / 100)
+
+#     # Генерируем подпись для FreeKassa
+#     order_id = f"{request.user.id}_{design.id}_{design.created_at.timestamp()}"
+#     sign_str = f"{settings.FREEKASSA_MERCHANT_ID}:{amount}:{settings.FREEKASSA_SECRET_KEY}:{order_id}"
+#     signature = hashlib.md5(sign_str.encode()).hexdigest()
+
+#     context = {
+#         'design': design,
+#         'amount': f"{amount:.2f}",
+#         'discount_percent': discount_percent,
+#         'order_id': order_id,
+#         'signature': signature,
+#         'merchant_id': settings.FREEKASSA_MERCHANT_ID,
+#         'user_email': request.user.email,
+#     }
+
+
+#     return render(request, 'payments/payment.html', context)
+from django.conf import settings
+
 @login_required
 def create_payment(request, design_id):
     design = get_object_or_404(Design, id=design_id, is_active=True)
 
-    # Проверяем, не куплен ли уже дизайн
+    # ✅ 1. Проверка: уже куплен
     if Purchase.objects.filter(user=request.user, design=design).exists():
-        return redirect('design_detail', design_id=design_id)
+        return redirect('item_info', design_id=design.id)
+
+    # ✅ 2. Бесплатный дизайн → не идем в оплату
+    if design.price == 0:
+        return redirect('add_free_to_my_designs', design_id=design.id)
+
+    # ✅ 3. Оплата отключена (реальный сценарий, не заглушка)
+    if not getattr(settings, 'PAYMENTS_ENABLED', False):
+        return render(request, 'payments/unavailable.html', {
+            'design': design
+        })
+
+    # --- ниже будет РЕАЛЬНАЯ логика оплаты ---
 
     # Получаем активную скидку
     now = timezone.now()
-    active_discounts = design.discounts.filter(active=True, start_date__lte=now, end_date__gte=now)
+    active_discounts = design.discounts.filter(
+        active=True,
+        start_date__lte=now,
+        end_date__gte=now
+    )
     discount_percent = max((d.percent for d in active_discounts), default=0)
-    
+
     # Цена с учётом скидки
     amount = design.price * (1 - discount_percent / 100)
 
-    # Генерируем подпись для FreeKassa
-    order_id = f"{request.user.id}_{design.id}_{design.created_at.timestamp()}"
-    sign_str = f"{settings.FREEMASSKA_MERCHANT_ID}:{amount}:{settings.FREEMASSKA_SECRET_KEY}:{order_id}"
+    # Генерация order_id (лучше через uuid)
+    order_id = str(uuid.uuid4())
+
+    # Сохраняем платеж (важно для отслеживания)
+    Payment.objects.create(
+        user=request.user,
+        design=design,
+        amount=amount,
+        currency='KZT',  # или динамически
+        order_id=order_id
+    )
+
+    # Подпись для FreeKassa
+    sign_str = f"{settings.FREEKASSA_MERCHANT_ID}:{amount}:{settings.FREEKASSA_SECRET_KEY}:{order_id}"
     signature = hashlib.md5(sign_str.encode()).hexdigest()
 
     context = {
@@ -84,10 +147,9 @@ def create_payment(request, design_id):
         'discount_percent': discount_percent,
         'order_id': order_id,
         'signature': signature,
-        'merchant_id': settings.FREEMASSKA_MERCHANT_ID,
+        'merchant_id': settings.FREEKASSA_MERCHANT_ID,
         'user_email': request.user.email,
     }
-
 
     return render(request, 'payments/payment.html', context)
 
@@ -98,7 +160,7 @@ def payment_success(request):
     amount = request.POST.get('AMOUNT')
     sign = request.POST.get('SIGN')
 
-    sign_str = f"{settings.FREEMASSKA_MERCHANT_ID}:{amount}:{settings.FREEMASSKA_SECRET_KEY2}:{order_id}"
+    sign_str = f"{settings.FREEKASSA_MERCHANT_ID}:{amount}:{settings.FREEKASSA_SECRET_KEY2}:{order_id}"
     expected_sign = hashlib.md5(sign_str.encode()).hexdigest()
 
     if sign == expected_sign:

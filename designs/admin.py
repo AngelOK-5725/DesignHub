@@ -3,7 +3,14 @@
 # Register your models here.
 
 from django.contrib import admin
-from .models import Category, Design, DesignRating, DesignReview, HoopSize, DesignVariant, MachineType
+from .models import Category, Design, DesignRating, DesignReview, HoopSize, DesignVariant, MachineType, DesignImage
+
+class DesignImageInline(admin.TabularInline):
+    model = DesignImage
+    extra = 1
+    fields = ['image']
+    show_change_link = True
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -28,6 +35,8 @@ class DesignVariantAdmin(admin.ModelAdmin):
 
 @admin.register(Design)
 class DesignAdmin(admin.ModelAdmin):
+    inlines = [DesignImageInline]
+
     list_display = (
         'title',
         'category',

@@ -190,6 +190,15 @@ class Design(models.Model):
         from payments.services import get_final_price
         return get_final_price(self)['final_price']
 
+class DesignImage(models.Model):
+    design = models.ForeignKey(Design, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='designs/gallery/', blank=True, null=True)
+
+    
+    def __str__(self):
+        return f"Image for {self.design.title}"
+
+
 class DesignVariant(models.Model):
     design = models.ForeignKey(Design, on_delete=models.CASCADE, related_name='variants')
     hoop = models.ForeignKey(HoopSize, on_delete=models.CASCADE)

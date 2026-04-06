@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% comment %} payments\templates\payments\unavailable.html {% endcomment %}
+{% block title %}Дизайн временно недоступен{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1>😕 Упс!</h1>
+    <p>Этот дизайн пока недоступен, скоро мы подключим оплату.</p>
+    <a href="{% url 'design_list' %}" class="btn btn-primary mt-3">Вернуться к списку дизайнов</a>
+</div>
+{% endblock %}
